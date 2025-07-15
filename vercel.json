@@ -2,5 +2,8 @@
   "buildCommand": "next build",
   "outputDirectory": ".next",
   "framework": "nextjs",
-  "version": 2
+  "version": 2,
+  "routes": [
+    { "src": "/(.*)", "dest": "/" }
+  ]
 } 

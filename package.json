@@ -3,7 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build": "next build",
+    "build": "npm run build:css && next build",
+    "build:css": "tailwindcss -i ./src/styles/globals.css -o ./public/styles/globals.css --minify",
     "dev": "next dev",
     "lint": "next lint",
     "start": "next start"
