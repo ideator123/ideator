@@ -1,0 +1,8 @@
+@keyframes moveBackground {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(60px, 60px); }
+}
+
+.animated-background {
+  animation: moveBackground 30s linear infinite;
+} 
