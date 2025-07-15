@@ -5,6 +5,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Home, Folder, MessageCircle, LogOut } from "lucide-react";
+import CloudinaryUploadButton from "@/components/CloudinaryUploadButton";
 
 // Static credentials (consider migrating to environment variables for production)
 const ADMIN_USERNAME = "admin";
@@ -184,6 +185,8 @@ const AdminPage = () => {
 
   /* --------------------------- ADMIN DASHBOARD --------------------------- */
 
+  const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET as string;
+
   return (
     <div className="min-h-screen flex">
       {/* Sidebar */}
@@ -249,6 +252,7 @@ const AdminPage = () => {
               <h3 className="text-xl font-semibold mb-4 text-[#0a2449]">Add Portfolio Item</h3>
               <div className="space-y-4">
                 {Object.keys(newPortfolio).map((key) => (
+                  key !== "image" ? (
                   <input
                     key={key}
                     name={key}
@@ -256,7 +260,9 @@ const AdminPage = () => {
                     value={(newPortfolio as any)[key] as string}
                     onChange={handlePortfolioChange}
                     className="w-full border p-2 rounded"
-                  />
+                  />) : (
+                    <CloudinaryUploadButton key="image-upload" uploadPreset={uploadPreset} onUpload={(url)=> setNewPortfolio({...newPortfolio, image: url})} />
+                  )
                 ))}
                 <Button onClick={addPortfolio} className="bg-[#0a2449] text-[#efede7] hover:bg-[#0a2449]/90 w-full">
                   Add Item
@@ -293,6 +299,7 @@ const AdminPage = () => {
               <h3 className="text-xl font-semibold mb-4 text-[#0a2449]">Add Testimonial</h3>
               <div className="space-y-4">
                 {Object.keys(newTestimonial).map((key) => (
+                  key !== "image" ? (
                   <input
                     key={key}
                     name={key}
@@ -300,7 +307,9 @@ const AdminPage = () => {
                     value={(newTestimonial as any)[key] as string}
                     onChange={handleTestimonialChange as any}
                     className="w-full border p-2 rounded"
-                  />
+                  />) : (
+                    <CloudinaryUploadButton key="testimonial-image" uploadPreset={uploadPreset} onUpload={(url)=> setNewTestimonial({...newTestimonial, image: url})} />
+                  )
                 ))}
                 <Button onClick={addTestimonial} className="bg-[#0a2449] text-[#efede7] hover:bg-[#0a2449]/90 w-full">
                   Add Testimonial
