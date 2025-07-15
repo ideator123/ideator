@@ -1,0 +1,6 @@
+# Exclude heavy video files that exceed Vercel's 50 MB per-file limit
+public/fashion.mp4
+public/banner.mp4
+
+# Ignore local noise
+.DS_Store 
