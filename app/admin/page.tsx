@@ -4,6 +4,7 @@ import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Home, Folder, MessageCircle, LogOut } from "lucide-react";
 
 // Static credentials (consider migrating to environment variables for production)
 const ADMIN_USERNAME = "admin";
@@ -33,6 +34,8 @@ const AdminPage = () => {
     rating: 5,
     image: "",
   });
+
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'portfolio' | 'testimonials'>('dashboard');
 
   // Load auth state from localStorage on mount
   useEffect(() => {
@@ -180,102 +183,133 @@ const AdminPage = () => {
   }
 
   /* --------------------------- ADMIN DASHBOARD --------------------------- */
+
   return (
-    <div className="min-h-screen bg-[#efede7] p-8">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-3xl font-bold text-[#0a2449]">Admin Dashboard</h1>
-        <Button onClick={handleLogout} className="bg-red-500 hover:bg-red-600 text-white">Logout</Button>
-      </div>
-
-      {/* Portfolio Section */}
-      <section className="mb-16">
-        <div className="flex items-center gap-2 mb-6">
-          <div className="w-8 h-[2px] bg-[#0a2449]"></div>
-          <Badge className="bg-[#0a2449] text-[#efede7] rounded-full px-4 py-2">
-            Portfolio
-          </Badge>
+    <div className="min-h-screen flex">
+      {/* Sidebar */}
+      <aside className="w-64 bg-[#0a2449] text-[#efede7] flex flex-col p-6 space-y-6">
+        <div className="flex items-center justify-between">
+          <h2 className="text-2xl font-bold">Admin</h2>
         </div>
+        <nav className="flex-1 space-y-2">
+          <button
+            className={`flex items-center gap-3 w-full px-4 py-2 rounded-lg hover:bg-[#0a2449]/70 transition-colors ${activeTab === 'dashboard' ? 'bg-[#0a2449]/70' : ''}`}
+            onClick={() => setActiveTab('dashboard')}
+          >
+            <Home className="w-5 h-5" /> Dashboard
+          </button>
+          <button
+            className={`flex items-center gap-3 w-full px-4 py-2 rounded-lg hover:bg-[#0a2449]/70 transition-colors ${activeTab === 'portfolio' ? 'bg-[#0a2449]/70' : ''}`}
+            onClick={() => setActiveTab('portfolio')}
+          >
+            <Folder className="w-5 h-5" /> Portfolio
+          </button>
+          <button
+            className={`flex items-center gap-3 w-full px-4 py-2 rounded-lg hover:bg-[#0a2449]/70 transition-colors ${activeTab === 'testimonials' ? 'bg-[#0a2449]/70' : ''}`}
+            onClick={() => setActiveTab('testimonials')}
+          >
+            <MessageCircle className="w-5 h-5" /> Testimonials
+          </button>
+        </nav>
+        <Button onClick={handleLogout} variant="outline" className="bg-red-500 hover:bg-red-600 text-white flex items-center gap-2">
+          <LogOut className="w-4 h-4" /> Logout
+        </Button>
+      </aside>
 
-        {/* List Items */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {portfolioItems.map((item) => (
-            <div key={item.id} className="relative bg-white rounded-xl shadow p-4">
-              <img src={item.image} alt={item.title} className="w-full h-40 object-cover rounded-lg mb-2" />
-              <h3 className="font-semibold text-[#0a2449] mb-1">{item.title}</h3>
-              <p className="text-sm text-[#0a2449]/70 mb-2">{item.location}</p>
-              <Badge className="mb-2">{item.category}</Badge>
-              <Button size="sm" variant="outline" className="text-red-500" onClick={() => deletePortfolio(item.id)}>
-                Delete
-              </Button>
+      {/* Main Content */}
+      <main className="flex-1 bg-[#efede7] p-8 overflow-y-auto">
+        {activeTab === 'dashboard' && (
+          <h1 className="text-3xl font-bold text-[#0a2449] mb-8">Welcome, Admin!</h1>
+        )}
+
+        {activeTab === 'portfolio' && (
+          <section className="mb-16">
+            <div className="flex items-center gap-2 mb-6">
+              <div className="w-8 h-[2px] bg-[#0a2449]"></div>
+              <Badge className="bg-[#0a2449] text-[#efede7] rounded-full px-4 py-2">
+                Portfolio
+              </Badge>
             </div>
-          ))}
-        </div>
-
-        {/* Add New Portfolio Item */}
-        <div className="bg-white p-6 rounded-xl shadow-md max-w-lg">
-          <h3 className="text-xl font-semibold mb-4 text-[#0a2449]">Add Portfolio Item</h3>
-          <div className="space-y-4">
-            {Object.keys(newPortfolio).map((key) => (
-              <input
-                key={key}
-                name={key}
-                placeholder={key}
-                value={(newPortfolio as any)[key] as string}
-                onChange={handlePortfolioChange}
-                className="w-full border p-2 rounded"
-              />
-            ))}
-            <Button onClick={addPortfolio} className="bg-[#0a2449] text-[#efede7] hover:bg-[#0a2449]/90 w-full">
-              Add Item
-            </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Testimonials Section */}
-      <section>
-        <div className="flex items-center gap-2 mb-6">
-          <div className="w-8 h-[2px] bg-[#0a2449]"></div>
-          <Badge className="bg-[#0a2449] text-[#efede7] rounded-full px-4 py-2">
-            Testimonials
-          </Badge>
-        </div>
-
-        {/* List Testimonials */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-          {testimonials.map((t) => (
-            <div key={t.id} className="relative bg-white rounded-xl shadow p-4">
-              <h3 className="font-semibold text-[#0a2449] mb-1">{t.name}</h3>
-              <p className="text-sm text-[#0a2449]/70 mb-2">{t.company}</p>
-              <p className="text-sm mb-2 italic">"{t.text}"</p>
-              <Badge className="mb-2">Rating: {t.rating}</Badge>
-              <Button size="sm" variant="outline" className="text-red-500" onClick={() => deleteTestimonial(t.id)}>
-                Delete
-              </Button>
+            {/* List Items */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {portfolioItems.map((item) => (
+                <div key={item.id} className="relative bg-white rounded-xl shadow p-4">
+                  <img src={item.image} alt={item.title} className="w-full h-40 object-cover rounded-lg mb-2" />
+                  <h3 className="font-semibold text-[#0a2449] mb-1">{item.title}</h3>
+                  <p className="text-sm text-[#0a2449]/70 mb-2">{item.location}</p>
+                  <Badge className="mb-2">{item.category}</Badge>
+                  <Button size="sm" variant="outline" className="text-red-500" onClick={() => deletePortfolio(item.id)}>
+                    Delete
+                  </Button>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+            {/* Add New Portfolio Item */}
+            <div className="bg-white p-6 rounded-xl shadow-md max-w-lg">
+              <h3 className="text-xl font-semibold mb-4 text-[#0a2449]">Add Portfolio Item</h3>
+              <div className="space-y-4">
+                {Object.keys(newPortfolio).map((key) => (
+                  <input
+                    key={key}
+                    name={key}
+                    placeholder={key}
+                    value={(newPortfolio as any)[key] as string}
+                    onChange={handlePortfolioChange}
+                    className="w-full border p-2 rounded"
+                  />
+                ))}
+                <Button onClick={addPortfolio} className="bg-[#0a2449] text-[#efede7] hover:bg-[#0a2449]/90 w-full">
+                  Add Item
+                </Button>
+              </div>
+            </div>
+          </section>
+        )}
 
-        {/* Add New Testimonial */}
-        <div className="bg-white p-6 rounded-xl shadow-md max-w-lg">
-          <h3 className="text-xl font-semibold mb-4 text-[#0a2449]">Add Testimonial</h3>
-          <div className="space-y-4">
-            {Object.keys(newTestimonial).map((key) => (
-              <input
-                key={key}
-                name={key}
-                placeholder={key}
-                value={(newTestimonial as any)[key] as string}
-                onChange={handleTestimonialChange as any}
-                className="w-full border p-2 rounded"
-              />
-            ))}
-            <Button onClick={addTestimonial} className="bg-[#0a2449] text-[#efede7] hover:bg-[#0a2449]/90 w-full">
-              Add Testimonial
-            </Button>
-          </div>
-        </div>
-      </section>
+        {activeTab === 'testimonials' && (
+          <section>
+            <div className="flex items-center gap-2 mb-6">
+              <div className="w-8 h-[2px] bg-[#0a2449]"></div>
+              <Badge className="bg-[#0a2449] text-[#efede7] rounded-full px-4 py-2">
+                Testimonials
+              </Badge>
+            </div>
+            {/* List Testimonials */}
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+              {testimonials.map((t) => (
+                <div key={t.id} className="relative bg-white rounded-xl shadow p-4">
+                  <h3 className="font-semibold text-[#0a2449] mb-1">{t.name}</h3>
+                  <p className="text-sm text-[#0a2449]/70 mb-2">{t.company}</p>
+                  <p className="text-sm mb-2 italic">"{t.text}"</p>
+                  <Badge className="mb-2">Rating: {t.rating}</Badge>
+                  <Button size="sm" variant="outline" className="text-red-500" onClick={() => deleteTestimonial(t.id)}>
+                    Delete
+                  </Button>
+                </div>
+              ))}
+            </div>
+            {/* Add New Testimonial */}
+            <div className="bg-white p-6 rounded-xl shadow-md max-w-lg">
+              <h3 className="text-xl font-semibold mb-4 text-[#0a2449]">Add Testimonial</h3>
+              <div className="space-y-4">
+                {Object.keys(newTestimonial).map((key) => (
+                  <input
+                    key={key}
+                    name={key}
+                    placeholder={key}
+                    value={(newTestimonial as any)[key] as string}
+                    onChange={handleTestimonialChange as any}
+                    className="w-full border p-2 rounded"
+                  />
+                ))}
+                <Button onClick={addTestimonial} className="bg-[#0a2449] text-[#efede7] hover:bg-[#0a2449]/90 w-full">
+                  Add Testimonial
+                </Button>
+              </div>
+            </div>
+          </section>
+        )}
+      </main>
     </div>
   );
 };
