@@ -12,6 +12,8 @@ const ADMIN_USERNAME = "admin";
 const ADMIN_PASSWORD = "1234";
 
 const AdminPage = () => {
+  console.log("🎯 AdminPage component is loading!");
+  
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [credentials, setCredentials] = useState({ username: "", password: "" });
   const [loginError, setLoginError] = useState<string>("");
@@ -25,7 +27,7 @@ const AdminPage = () => {
     location: "",
     category: "",
     image: "",
-    videoUrl: "",
+    videourl: "",
   });
 
   const [newTestimonial, setNewTestimonial] = useState({
@@ -37,6 +39,15 @@ const AdminPage = () => {
   });
 
   const [activeTab, setActiveTab] = useState<'dashboard' | 'portfolio' | 'testimonials'>('dashboard');
+  const [editPortfolioId, setEditPortfolioId] = useState<number | null>(null);
+  const [editTestimonialId, setEditTestimonialId] = useState<number | null>(null);
+
+  // Validation helpers
+  const isTestimonialValid =
+    newTestimonial.name.trim() !== "" &&
+    newTestimonial.company.trim() !== "" &&
+    newTestimonial.text.trim() !== "" &&
+    newTestimonial.image.trim() !== "";
 
   // Load auth state from localStorage on mount
   useEffect(() => {
@@ -54,7 +65,7 @@ const AdminPage = () => {
     const fetchData = async () => {
       const { data: portData } = await supabase
         .from("portfolio")
-        .select("id, title, location, image, videoUrl, category")
+        .select("id, title, location, image, videourl, category")
         .order("id", { ascending: false });
       setPortfolioItems(portData || []);
 
@@ -67,6 +78,16 @@ const AdminPage = () => {
 
     fetchData();
   }, [isAuthenticated]);
+
+  // Monitor image changes
+  useEffect(() => {
+    console.log("🖼️ newTestimonial.image changed to:", newTestimonial.image);
+  }, [newTestimonial.image]);
+
+  // Monitor entire testimonial object changes
+  useEffect(() => {
+    console.log("📝 newTestimonial object changed:", newTestimonial);
+  }, [newTestimonial]);
 
   /* ----------------------------- AUTH HANDLERS ---------------------------- */
   const handleLogin = (e: FormEvent) => {
@@ -95,9 +116,22 @@ const AdminPage = () => {
     if (error) {
       alert("Failed to add portfolio item: " + error.message);
     } else {
-      setNewPortfolio({ title: "", location: "", category: "", image: "", videoUrl: "" });
+      setNewPortfolio({ title: "", location: "", category: "", image: "", videourl: "" });
       // Refresh list
-      const { data } = await supabase.from("portfolio").select("id, title, location, image, videoUrl, category");
+      const { data } = await supabase.from("portfolio").select("id, title, location, image, videourl, category");
+      setPortfolioItems(data || []);
+    }
+  };
+
+  const updatePortfolio = async () => {
+    if (editPortfolioId === null) return;
+    const { error } = await supabase.from("portfolio").update(newPortfolio).eq("id", editPortfolioId);
+    if (error) {
+      alert("Failed to update portfolio item: " + error.message);
+    } else {
+      setNewPortfolio({ title: "", location: "", category: "", image: "", videourl: "" });
+      setEditPortfolioId(null);
+      const { data } = await supabase.from("portfolio").select("id, title, location, image, videourl, category");
       setPortfolioItems(data || []);
     }
   };
@@ -112,16 +146,57 @@ const AdminPage = () => {
   };
 
   /* ------------------------- TESTIMONIAL HANDLERS ------------------------- */
+  // Use functional update to avoid stale state and ensure numeric rating parsing
   const handleTestimonialChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setNewTestimonial({ ...newTestimonial, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setNewTestimonial((prev) => ({
+      ...prev,
+      [name]: name === "rating" ? Number(value) : value,
+    }));
   };
 
   const addTestimonial = async () => {
-    const { error } = await supabase.from("testimonials").insert(newTestimonial);
+    console.log("🚀 === STARTING ADD TESTIMONIAL ===");
+    console.log("📊 Current newTestimonial state:", JSON.stringify(newTestimonial, null, 2));
+    console.log("🖼️ Image URL specifically:", newTestimonial.image);
+    console.log("📏 Image URL length:", newTestimonial.image?.length || 0);
+    console.log("🔍 Is image URL truthy?", !!newTestimonial.image);
+    
+    const { data: inserted, error } = await supabase
+      .from("testimonials")
+      .insert([newTestimonial])
+      .select();
+
     if (error) {
+      console.error("❌ Supabase insert error:", error);
       alert("Failed to add testimonial: " + error.message);
+      return;
+    }
+
+    console.log("✅ Supabase insert successful!");
+    console.log("📋 Inserted data:", JSON.stringify(inserted, null, 2));
+    console.log("🖼️ Image URL in inserted data:", inserted?.[0]?.image);
+    console.log("🚀 === END ADD TESTIMONIAL ===");
+    
+    // Reset form
+    setNewTestimonial({ name: "", company: "", text: "", rating: 5, image: "" });
+
+    // Refresh testimonials list
+    const { data } = await supabase
+      .from("testimonials")
+      .select("id, name, company, text, rating, image")
+      .order("id", { ascending: false });
+    setTestimonials(data || []);
+  };
+
+  const updateTestimonial = async () => {
+    if (editTestimonialId === null) return;
+    const { error } = await supabase.from("testimonials").update(newTestimonial).eq("id", editTestimonialId);
+    if (error) {
+      alert("Failed to update testimonial: " + error.message);
     } else {
       setNewTestimonial({ name: "", company: "", text: "", rating: 5, image: "" });
+      setEditTestimonialId(null);
       const { data } = await supabase.from("testimonials").select("id, name, company, text, rating, image");
       setTestimonials(data || []);
     }
@@ -185,7 +260,8 @@ const AdminPage = () => {
 
   /* --------------------------- ADMIN DASHBOARD --------------------------- */
 
-  const uploadPreset = process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET as string;
+  const uploadPreset = "helloideator"; // process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET as string;
+  console.log("🔧 Using upload preset:", uploadPreset);
 
   return (
     <div className="min-h-screen flex">
@@ -241,9 +317,12 @@ const AdminPage = () => {
                   <h3 className="font-semibold text-[#0a2449] mb-1">{item.title}</h3>
                   <p className="text-sm text-[#0a2449]/70 mb-2">{item.location}</p>
                   <Badge className="mb-2">{item.category}</Badge>
-                  <Button size="sm" variant="outline" className="text-red-500" onClick={() => deletePortfolio(item.id)}>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" className="text-blue-500" onClick={() => {setEditPortfolioId(item.id); setNewPortfolio({title:item.title,location:item.location,category:item.category,image:item.image,videourl:item.videourl}); setActiveTab('portfolio');}}>Edit</Button>
+                    <Button size="sm" variant="outline" className="text-red-500" onClick={() => deletePortfolio(item.id)}>
                     Delete
-                  </Button>
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -261,12 +340,24 @@ const AdminPage = () => {
                     onChange={handlePortfolioChange}
                     className="w-full border p-2 rounded"
                   />) : (
-                    <CloudinaryUploadButton key="image-upload" uploadPreset={uploadPreset} onUpload={(url)=> setNewPortfolio({...newPortfolio, image: url})} />
+                    <CloudinaryUploadButton
+                      key="image-upload"
+                      uploadPreset={uploadPreset}
+                      onUpload={(url) =>
+                        setNewPortfolio((prev) => ({ ...prev, image: url }))
+                      }
+                    />
                   )
                 ))}
-                <Button onClick={addPortfolio} className="bg-[#0a2449] text-[#efede7] hover:bg-[#0a2449]/90 w-full">
-                  Add Item
-                </Button>
+                {editPortfolioId ? (
+                  <Button onClick={updatePortfolio} className="bg-green-600 text-white hover:bg-green-700 w-full">
+                    Update Item
+                  </Button>
+                ) : (
+                  <Button onClick={addPortfolio} className="bg-[#0a2449] text-[#efede7] hover:bg-[#0a2449]/90 w-full">
+                    Add Item
+                  </Button>
+                )}
               </div>
             </div>
           </section>
@@ -288,9 +379,14 @@ const AdminPage = () => {
                   <p className="text-sm text-[#0a2449]/70 mb-2">{t.company}</p>
                   <p className="text-sm mb-2 italic">"{t.text}"</p>
                   <Badge className="mb-2">Rating: {t.rating}</Badge>
-                  <Button size="sm" variant="outline" className="text-red-500" onClick={() => deleteTestimonial(t.id)}>
+                  <div className="flex gap-2">
+                    <Button size="sm" variant="outline" className="text-blue-500" onClick={() => {setEditTestimonialId(t.id); setNewTestimonial({name:t.name,company:t.company,text:t.text,rating:t.rating,image:t.image}); setActiveTab('testimonials');}}>
+                      Edit
+                    </Button>
+                    <Button size="sm" variant="outline" className="text-red-500" onClick={() => deleteTestimonial(t.id)}>
                     Delete
-                  </Button>
+                    </Button>
+                  </div>
                 </div>
               ))}
             </div>
@@ -308,12 +404,40 @@ const AdminPage = () => {
                     onChange={handleTestimonialChange as any}
                     className="w-full border p-2 rounded"
                   />) : (
-                    <CloudinaryUploadButton key="testimonial-image" uploadPreset={uploadPreset} onUpload={(url)=> setNewTestimonial({...newTestimonial, image: url})} />
+                    <div key={key} className="space-y-2">
+                      {newTestimonial.image && (
+                        <div className="mt-2">
+                          <p className="text-sm text-gray-600">Image uploaded:</p>
+                          <img src={newTestimonial.image} alt="Preview" className="w-20 h-20 object-cover rounded" />
+                        </div>
+                      )}
+                      <CloudinaryUploadButton
+                        key="testimonial-image"
+                        uploadPreset={uploadPreset}
+                        onUpload={(url) => {
+                          console.log("=== TESTIMONIAL IMAGE UPLOAD CALLBACK ===");
+                          console.log("Received URL:", url);
+                          console.log("Current newTestimonial state before update:", newTestimonial);
+                          setNewTestimonial((prev) => {
+                            const updated = { ...prev, image: url };
+                            console.log("New testimonial state after update:", updated);
+                            return updated;
+                          });
+                          console.log("=== END TESTIMONIAL CALLBACK ===");
+                        }}
+                      />
+                    </div>
                   )
                 ))}
-                <Button onClick={addTestimonial} className="bg-[#0a2449] text-[#efede7] hover:bg-[#0a2449]/90 w-full">
-                  Add Testimonial
-                </Button>
+                {editTestimonialId ? (
+                  <Button onClick={updateTestimonial} className="bg-green-600 text-white hover:bg-green-700 w-full">
+                    Update Testimonial
+                  </Button>
+                ) : (
+                  <Button onClick={addTestimonial} disabled={!isTestimonialValid} className="bg-[#0a2449] text-[#efede7] hover:bg-[#0a2449]/90 w-full disabled:opacity-50 disabled:cursor-not-allowed">
+                    Add Testimonial
+                  </Button>
+                )}
               </div>
             </div>
           </section>

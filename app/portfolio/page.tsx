@@ -20,7 +20,7 @@ const PortfolioPage = () => {
     const fetchPortfolio = async () => {
       const { data, error } = await supabase
         .from("portfolio")
-        .select("id, title, location, image, videoUrl, category")
+        .select("id, title, location, image, videourl, category")
         .order("id", { ascending: false });
 
       if (error) {
@@ -51,7 +51,7 @@ const PortfolioPage = () => {
               <div
                 key={index}
                 className="group cursor-pointer"
-                onClick={() => item.videoUrl && setVideoModalUrl(item.videoUrl)}
+                onClick={() => item.videourl && setVideoModalUrl(item.videourl)}
               >
                 <div className="relative overflow-hidden rounded-3xl">
                   <Image

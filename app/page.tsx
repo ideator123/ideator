@@ -33,6 +33,10 @@ import { portfolioItems as portfolioItemsStatic } from "@/data/portfolio";
 import { supabase } from "@/lib/supabaseClient";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import {
+  CldUploadWidget,
+  CloudinaryUploadWidgetResults    // ← correct name 
+} from "next-cloudinary";
 
 export default function IdeatorEventsWebsite() {
   // Navigation menu state is now handled inside Header component
@@ -122,7 +126,7 @@ export default function IdeatorEventsWebsite() {
       // Portfolio data
       const { data: portfolioData, error: portfolioError } = await supabase
         .from("portfolio")
-        .select("id, title, location, image, videoUrl, category")
+        .select("id, title, location, image, videourl, category") 
         .order("id", { ascending: false });
 
       if (portfolioError) {
@@ -364,7 +368,7 @@ export default function IdeatorEventsWebsite() {
               <div
                 key={index}
                 className="group cursor-pointer"
-                onClick={() => item.videoUrl && setVideoModalUrl(item.videoUrl)}
+                onClick={() => item.videourl && setVideoModalUrl(item.videourl)}  
               >
                 <div className="relative overflow-hidden rounded-3xl">
                   <Image
@@ -491,7 +495,7 @@ export default function IdeatorEventsWebsite() {
                   </p>
                   <div className="flex items-center pt-4 sm:pt-6 md:pt-8 border-t border-[#0a2449]/5">
                     <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#0a2449]/5 flex items-center justify-center mr-3 sm:mr-4">
-                      <Users className="w-5 h-5 sm:w-6 sm:h-6 text-[#0a2449]/40" />
+                      <Users className="w-5 h-5 sm:w-6 sm:h-6 text-[#0a2449]/40" /> 
                     </div>
                     <div>
                       <h4 className="font-medium text-[#0a2449] text-base sm:text-lg">
