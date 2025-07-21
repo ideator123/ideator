@@ -33,16 +33,6 @@ const PortfolioPage = () => {
     fetchPortfolio();
   }, []);
 
-  // Color schemes for Rubik's cube effect
-  const colorSchemes = [
-    { bg: "from-orange-400 to-pink-500", text: "text-white" },
-    { bg: "from-slate-700 to-slate-900", text: "text-white" },
-    { bg: "from-red-500 to-red-600", text: "text-white" },
-    { bg: "from-blue-600 to-blue-800", text: "text-white" },
-    { bg: "from-cyan-400 to-blue-500", text: "text-white" },
-    { bg: "from-indigo-600 to-purple-700", text: "text-white" },
-  ];
-
   return (
     <div className="min-h-screen bg-[#efede7]">
       <Header />
@@ -56,79 +46,46 @@ const PortfolioPage = () => {
             <h1 className="text-3xl md:text-5xl font-bold text-[#0a2449]">Portfolio</h1>
           </div>
 
-          {/* Rubik's Cube Grid Layout */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-0">
-            {portfolioItems.map((item, index) => {
-              const colorScheme = colorSchemes[index % colorSchemes.length];
-              return (
-                <div
-                  key={index}
-                  className="group cursor-pointer relative h-[400px] md:h-[500px]"
-                  onClick={() => item.videourl && setVideoModalUrl(item.videourl)}
-                >
-                  <div className={`relative w-full h-full bg-gradient-to-br ${colorScheme.bg} overflow-hidden`}>
-                    {/* Background Image */}
-                    <div className="absolute inset-0 opacity-30">
-                      <Image
-                        src={item.image}
-                        alt={item.title}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    
-                    {/* Content Overlay */}
-                    <div className="absolute inset-0 flex flex-col justify-between p-8 z-10">
-                      {/* Project Number */}
-                      <div className="flex justify-between items-start">
+          {/* Corporate Grid Layout */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 px-8">
+            {portfolioItems.map((item, index) => (
+              <div
+                key={index}
+                className="group cursor-pointer relative overflow-hidden rounded-3xl shadow-lg transition-all duration-300 hover:shadow-xl"
+                onClick={() => item.videourl && setVideoModalUrl(item.videourl)}
+              >
+                <div className="relative w-full h-[400px] md:h-[500px] overflow-hidden">
+                  <Image
+                    src={item.image}
+                    alt={item.title}
+                    fill
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a2449]/80 via-[#0a2449]/40 to-transparent">
+                    <div className="absolute bottom-8 left-8 text-white">
+                      <div className="flex justify-between items-end w-full">
                         <div>
-                          <div className={`text-6xl md:text-8xl font-bold ${colorScheme.text} opacity-20`}>
-                            {String(index + 1).padStart(2, '0')}
-                          </div>
+                          <Badge className="bg-white/20 text-white mb-4 border-0">
+                            {item.category}
+                          </Badge>
+                          <h3 className="text-2xl font-bold mb-2">{item.title}</h3>
+                          <p className="text-white/80 flex items-center">
+                            <MapPin className="w-4 h-4 mr-2" />
+                            {item.location}
+                          </p>
                         </div>
                         {item.videourl && (
-                          <div className={`${colorScheme.text} opacity-70 group-hover:opacity-100 transition-opacity`}>
+                          <div className="text-white opacity-70 group-hover:opacity-100 transition-opacity">
                             <Play className="w-8 h-8" />
                           </div>
                         )}
                       </div>
-
-                      {/* Project Info */}
-                      <div className="space-y-4">
-                        <div>
-                          <h2 className={`text-4xl md:text-5xl font-bold ${colorScheme.text} mb-2`}>
-                            Project
-                          </h2>
-                          <div className={`text-6xl md:text-8xl font-bold ${colorScheme.text}`}>
-                            {String(index + 1).padStart(2, '0')}
-                          </div>
-                        </div>
-                        
-                        <div className="space-y-2">
-                          <h3 className={`text-xl md:text-2xl font-bold ${colorScheme.text}`}>
-                            {item.title}
-                          </h3>
-                          <p className={`${colorScheme.text} opacity-80 flex items-center text-sm md:text-base`}>
-                            <MapPin className="w-4 h-4 mr-2" />
-                            {item.location}
-                          </p>
-                          <Badge className={`bg-white/20 ${colorScheme.text} border-0`}>
-                            {item.category}
-                          </Badge>
-                        </div>
-
-                        <button className={`${colorScheme.text} opacity-70 hover:opacity-100 transition-opacity text-sm font-medium flex items-center`}>
-                          VIEW <ArrowLeft className="w-4 h-4 ml-2 rotate-180" />
-                        </button>
-                      </div>
                     </div>
-
-                    {/* Hover Effect */}
-                    <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                   </div>
                 </div>
-              );
-            })}
+              </div>
+            ))}
           </div>
         </div>
 
@@ -141,7 +98,7 @@ const PortfolioPage = () => {
                 title="Portfolio video"
                 allow="autoplay; encrypted-media"
                 allowFullScreen
-                className="w-full h-full shadow-2xl"
+                className="w-full h-full rounded-xl shadow-2xl"
               />
               <button
                 className="absolute -top-10 right-0 text-white text-3xl font-bold hover:text-gray-300 focus:outline-none"

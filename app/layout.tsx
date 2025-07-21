@@ -2,9 +2,17 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'v0 App',
-  description: 'Created with v0',
-  generator: 'v0.dev',
+  title: 'Ideator Events',
+  description: 'Designing Remarkable Events Across the Globe',
+  generator: 'Ideator Events',
+  openGraph: {
+    title: 'Ideator Events',
+    description: 'Designing Remarkable Events Across the Globe',
+    type: 'website',
+    locale: 'en_US',
+    url: 'https://ideator.events',
+    siteName: 'Ideator Events',
+  },
   icons: {
     icon: [
       { url: '/favicon.ico' },
@@ -29,7 +37,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="antialiased font-serif">{children}</body>
+      <body className="antialiased font-serif bg-[#efede7] text-[#0a2449]">{children}</body>
     </html>
   )
 }
