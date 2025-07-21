@@ -225,10 +225,10 @@ export default function IdeatorEventsWebsite() {
         id="about"
         className="py-20 bg-[#efede7] relative overflow-hidden"
       >
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-4 md:px-0">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             {/* Left Content */}
-            <div>
+            <div className="px-4 md:px-0">
               <div className="inline-flex items-center gap-2 mb-6">
                 <div className="w-12 h-[2px] bg-[#0a2449]"></div>
                 <Badge className="bg-[#0a2449] text-[#efede7] rounded-full px-4 py-2">
@@ -280,15 +280,10 @@ export default function IdeatorEventsWebsite() {
                   At Ideator Events, we believe a successful event is all about the guest experience. With over 18 years of expertise and a dedicated team, we turn ideas into unforgettable moments — so you can focus on enjoying the celebration.
                 </p>
               </div>
-
-              {/* Simple Stats */}
-
-              {/* Leadership */}
-          
             </div>
 
             {/* Right Content - Animation */}
-            <div className="flex flex-col gap-12">
+            <div className="flex flex-col gap-12 px-4 md:px-0">
               <div className="relative">
                 <video
                   src="/about.mp4"
@@ -325,20 +320,6 @@ export default function IdeatorEventsWebsite() {
                     Events Delivered
                   </div>
                 </div>  
-                {/* <div className="bg-[#0a2449]/5 rounded-2xl p-6 text-center transition-all hover:bg-[#0a2449]/10">
-                  <div className="text-4xl font-bold text-[#0a2449] mb-2">
-                    <Image 
-                      src="/eemalogo.png"
-                      alt="Platinum Member Logo"
-                      width={48}
-                      height={48}
-                      className="mx-auto"
-                    />
-                  </div>
-                  <div className="text-sm font-medium text-[#0a2449]/70">
-                    Platinum Member
-                  </div>
-                </div> */}
               </div>
             </div>
           </div>
@@ -494,8 +475,18 @@ export default function IdeatorEventsWebsite() {
                     "{testimonial.text}"
                   </p>
                   <div className="flex items-center pt-4 sm:pt-6 md:pt-8 border-t border-[#0a2449]/5">
-                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-[#0a2449]/5 flex items-center justify-center mr-3 sm:mr-4">
-                      <Users className="w-5 h-5 sm:w-6 sm:h-6 text-[#0a2449]/40" /> 
+                    <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden bg-[#0a2449]/5 flex items-center justify-center mr-3 sm:mr-4">
+                      {testimonial.image ? (
+                        <Image
+                          src={testimonial.image}
+                          alt={testimonial.name}
+                          width={48}
+                          height={48}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Users className="w-5 h-5 sm:w-6 sm:h-6 text-[#0a2449]/40" />
+                      )}
                     </div>
                     <div>
                       <h4 className="font-medium text-[#0a2449] text-base sm:text-lg">

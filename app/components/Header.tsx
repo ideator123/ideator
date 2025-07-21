@@ -9,6 +9,13 @@ import { Button } from "@/components/ui/button";
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
+  const sections = [
+    { name: 'About', href: '#about' },
+    { name: 'Services', href: '#services' },
+    { name: 'Portfolio', href: '#portfolio' },
+    { name: 'Contact', href: '#contact' }
+  ];
+
   return (
     <nav className="fixed top-0 w-full bg-[#0a2449]/60 backdrop-blur-xl shadow-lg z-50">
       <div className="container mx-auto px-4 py-4">
@@ -26,30 +33,15 @@ const Header = () => {
 
           {/* Desktop Menu */}
           <div className="hidden md:flex items-center space-x-10">
-            <Link
-              href="#about"
-              className="text-[#efede7] hover:text-[#efede7]/80 transition-all duration-300 text-sm uppercase tracking-wider"
-            >
-              About
-            </Link>
-            <Link
-              href="#services"
-              className="text-[#efede7] hover:text-[#efede7]/80 transition-all duration-300 text-sm uppercase tracking-wider"
-            >
-              Services
-            </Link>
-            <Link
-              href="#portfolio"
-              className="text-[#efede7] hover:text-[#efede7]/80 transition-all duration-300 text-sm uppercase tracking-wider"
-            >
-              Portfolio
-            </Link>
-            <Link
-              href="#contact"
-              className="text-[#efede7] hover:text-[#efede7]/80 transition-all duration-300 text-sm uppercase tracking-wider"
-            >
-              Contact
-            </Link>
+            {sections.map((section) => (
+              <Link
+                key={section.href}
+                href={section.href}
+                className="text-[#efede7] hover:text-[#efede7]/80 transition-all duration-300 text-sm uppercase tracking-wider"
+              >
+                {section.name}
+              </Link>
+            ))}
             <Button className="bg-[#efede7] hover:bg-[#efede7]/90 text-[#0a2449] px-8 py-2.5 rounded-full transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl">
               Get in Touch
             </Button>
@@ -68,34 +60,16 @@ const Header = () => {
         {isMenuOpen && (
           <div className="md:hidden py-6 mt-4 border-t border-[#efede7]/10">
             <div className="flex flex-col space-y-6">
-              <Link
-                href="#about"
-                className="text-[#efede7] hover:text-[#efede7]/80 transition-all duration-300 text-sm uppercase tracking-wider"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                About
-              </Link>
-              <Link
-                href="#services"
-                className="text-[#efede7] hover:text-[#efede7]/80 transition-all duration-300 text-sm uppercase tracking-wider"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Services
-              </Link>
-              <Link
-                href="#portfolio"
-                className="text-[#efede7] hover:text-[#efede7]/80 transition-all duration-300 text-sm uppercase tracking-wider"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Portfolio
-              </Link>
-              <Link
-                href="#contact"
-                className="text-[#efede7] hover:text-[#efede7]/80 transition-all duration-300 text-sm uppercase tracking-wider"
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Contact
-              </Link>
+              {sections.map((section) => (
+                <Link
+                  key={section.href}
+                  href={section.href}
+                  className="text-[#efede7] hover:text-[#efede7]/80 transition-all duration-300 text-sm uppercase tracking-wider"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  {section.name}
+                </Link>
+              ))}
               <Button className="bg-[#efede7] hover:bg-[#efede7]/90 text-[#0a2449] py-3 rounded-full transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl">
                 Get in Touch
               </Button>

@@ -9,6 +9,7 @@ import {
   Instagram,
   Youtube,
 } from "lucide-react";
+import ReactCountryFlag from "react-country-flag";
 import Image from "next/image";
 
 const Footer = () => {
@@ -138,21 +139,45 @@ const Footer = () => {
                 <div className="text-[#efede7]/70 group-hover:text-[#efede7] transition-colors flex flex-col">
                   <div className="flex flex-col md:flex-row md:space-x-8 mb-4">
                     <div className="flex items-center space-x-1 mb-2 md:mb-0">
-                      <span className="text-xl">🇮🇳</span>
+                      <ReactCountryFlag
+                        countryCode="IN"
+                        svg
+                        className="w-5 h-5 mr-1"
+                        title="India"
+                        aria-label="India flag"
+                      />
                       <span className="font-medium">India</span>
                     </div>
                     <div className="flex items-center space-x-1 mb-2 md:mb-0">
-                      <span className="text-xl">🇦🇪</span>
+                      <ReactCountryFlag
+                        countryCode="AE"
+                        svg
+                        className="w-5 h-5 mr-1"
+                        title="UAE"
+                        aria-label="UAE flag"
+                      />
                       <span className="font-medium">UAE</span>
                     </div>
                   </div>
                   <div className="flex flex-col md:flex-row md:space-x-8">
                     <div className="flex items-center space-x-1 mb-2 md:mb-0">
-                      <span className="text-xl">🇮🇩</span>
+                      <ReactCountryFlag
+                        countryCode="ID"
+                        svg
+                        className="w-5 h-5 mr-1"
+                        title="Indonesia"
+                        aria-label="Indonesia flag"
+                      />
                       <span className="font-medium">Indonesia</span>
                     </div>
                     <div className="flex items-center space-x-1">
-                      <span className="text-xl">🇹🇭</span>
+                      <ReactCountryFlag
+                        countryCode="TH"
+                        svg
+                        className="w-5 h-5 mr-1"
+                        title="Thailand"
+                        aria-label="Thailand flag"
+                      />
                       <span className="font-medium">Thailand</span>
                     </div>
                   </div>
