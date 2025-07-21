@@ -55,7 +55,7 @@ const SERVICES: Service[] = [
     id: 8,
     title: "FASHION SHOWS & LIFESTYLE EVENTS",
     description: "Sophisticated showcases of style and luxury experiences",
-    image: "/fashion.mp4"
+    image: "/fashion_compressed.mp4"
   }
 ];
 

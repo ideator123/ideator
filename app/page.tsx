@@ -191,7 +191,7 @@ export default function IdeatorEventsWebsite() {
           playsInline
           className="absolute inset-0 w-full h-full object-cover scale-105 animate-slow-zoom"
         >
-          <source src="/banner.mp4" type="video/mp4" />
+          <source src="/banner_compressed.mp4" type="video/mp4" />
         </video>
 
         <div className="relative z-20 text-center max-w-5xl mx-auto px-6">
@@ -364,7 +364,7 @@ export default function IdeatorEventsWebsite() {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {portfolioItems.map((item, index) => (
+            {portfolioItems.slice(0, 3).map((item, index) => (
               <div
                 key={index}
                 className="group cursor-pointer"
@@ -534,27 +534,28 @@ export default function IdeatorEventsWebsite() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-[#0a2449] text-[#efede7] relative overflow-hidden">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(239,237,231,0.1),transparent)] pointer-events-none"></div>
+      <section className="py-20 bg-[#efede7] text-[#0a2449] relative overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(10,36,73,0.1),transparent)] pointer-events-none"></div>
         <div className="container mx-auto px-4 max-w-6xl text-center relative z-10">
           <h2 className="text-4xl md:text-6xl font-bold mb-8">
             Eager to Craft Something Unique?
           </h2>
-          <p className="text-xl text-[#efede7]/70 mb-12 max-w-3xl mx-auto">
+          <p className="text-xl text-[#0a2449]/70 mb-12 max-w-3xl mx-auto">
             Let's explore how we can transform your ideas into a memorable
             experience for your audience.
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <Button
               size="lg"
-              className="bg-[#efede7] text-[#0a2449] hover:bg-[#efede7]/90 px-8 py-6 text-lg rounded-full group"
+              className="bg-[#0a2449] text-[#efede7] hover:bg-[#0a2449]/90 px-8 py-6 text-lg rounded-full group"
             >
               Kickstart Your Project
               <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
             </Button>
             <Button
               size="lg"
-              className="border-[#efede7] text-[#efede7] hover:bg-[#efede7]/10 px-8 py-6 text-lg rounded-full"
+              variant="outline"
+              className="border-2 border-[#0a2449] text-[#0a2449] hover:bg-[#0a2449]/10 px-8 py-6 text-lg rounded-full"
             >
               Grab Our Brochure
             </Button>
