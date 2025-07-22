@@ -255,13 +255,15 @@ export default function IdeatorEventsWebsite() {
             </span>
           </h1>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Button
-              size="lg"
-              className="bg-[#efede7] text-[#0a2449] hover:bg-[#efede7]/90 px-8 py-6 text-lg font-medium transition-all duration-300 rounded-full group"
-            >
-              Explore Our Work
-              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
+            <Link href="/portfolio">
+              <Button
+                size="lg"
+                className="bg-[#efede7] text-[#0a2449] hover:bg-[#efede7]/90 px-8 py-6 text-lg font-medium transition-all duration-300 rounded-full group"
+              >
+                Explore Our Work
+                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
+            </Link>
           </div>
         </div>
 
