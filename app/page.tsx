@@ -239,9 +239,14 @@ export default function IdeatorEventsWebsite() {
           muted
           loop
           playsInline
-          className="absolute inset-0 w-full h-full object-cover scale-105 animate-slow-zoom"
+          width="1280"
+          height="720"
+          poster="/fallback.avif"
+          style={{ width: '100%', height: 'auto' }}
+          className="absolute inset-0 object-cover scale-105 animate-slow-zoom"
         >
           <source src="/banner_compressed.mp4" type="video/mp4" />
+          <source src="/banner_compressed.webm" type="video/webm" />
         </video>
 
         <div className="relative z-20 text-center max-w-5xl mx-auto px-6">
@@ -360,15 +365,19 @@ export default function IdeatorEventsWebsite() {
 
             {/* Right Content - Animation */}
             <div className="flex flex-col gap-12 px-4 md:px-0">
-              <div className="relative" data-aos="fade-up" data-aos-delay="100">
+              <div>
                 <video
-                  src="/about.mp4"
                   autoPlay
-                  loop
                   muted
+                  loop
                   playsInline
+                  width="1280"
+                  height="720"
+                  poster="/logo.png"
                   className="w-full max-w-[500px] mx-auto rounded-3xl shadow-2xl"
-                />
+                >
+                  <source src="/about.mp4" type="video/mp4" />
+                </video>
               </div>
 
               <div className="grid grid-cols-3 gap-8">
