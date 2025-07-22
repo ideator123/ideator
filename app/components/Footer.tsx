@@ -14,10 +14,14 @@ import Image from "next/image";
 
 const Footer = () => {
   return (
-    <footer id="contact" className="bg-[#0a2449] text-[#efede7] py-16">
+    <footer id="contact" className="relative bg-[#0a2449] text-[#efede7] pt-24 pb-12">
+      {/* Decorative wave at the top of the footer */}
+      <div className="absolute inset-x-0 top-0 -translate-y-full pointer-events-none">
+       
+      </div>
       <div className="container mx-auto px-4 max-w-6xl">
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 mb-16">
-          <div>
+        <div className="grid gap-12 md:grid-cols-3 lg:grid-cols-5 mb-16">
+          <div className="lg:col-span-2">
             <Image  
               src="/logo.png"
               alt="Ideator Events Logo"
@@ -29,15 +33,15 @@ const Footer = () => {
               We specialize in creating unforgettable global experiences. From
               idea to execution, we make your vision a reality.
             </p>
-            <div className="flex space-x-6">
-              <Link href="#" className="text-[#efede7]/70 hover:text-[#efede7] transition-colors">
-                <Linkedin className="w-6 h-6" />
+            <div className="flex space-x-4">
+              <Link href="#" className="p-2 bg-[#efede7]/10 rounded-full hover:bg-[#efede7]/20 transition-colors">
+                <Linkedin className="w-5 h-5" />
               </Link>
-              <Link href="#" className="text-[#efede7]/70 hover:text-[#efede7] transition-colors">
-                <Instagram className="w-6 h-6" />
+              <Link href="#" className="p-2 bg-[#efede7]/10 rounded-full hover:bg-[#efede7]/20 transition-colors">
+                <Instagram className="w-5 h-5" />
               </Link>
-              <Link href="#" className="text-[#efede7]/70 hover:text-[#efede7] transition-colors">
-                <Youtube className="w-6 h-6" />
+              <Link href="#" className="p-2 bg-[#efede7]/10 rounded-full hover:bg-[#efede7]/20 transition-colors">
+                <Youtube className="w-5 h-5" />
               </Link>
             </div>
           </div>

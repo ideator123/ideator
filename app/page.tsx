@@ -33,9 +33,10 @@ import { portfolioItems as portfolioItemsStatic } from "@/data/portfolio";
 import { supabase } from "@/lib/supabaseClient";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
+import Preloader from "./components/Preloader";
 import {
   CldUploadWidget,
-  CloudinaryUploadWidgetResults    // ← correct name 
+  CloudinaryUploadWidgetResults, // ← correct name
 } from "next-cloudinary";
 
 export default function IdeatorEventsWebsite() {
@@ -45,10 +46,13 @@ export default function IdeatorEventsWebsite() {
   const [videoModalUrl, setVideoModalUrl] = useState<string | null>(null);
 
   // Dynamic data from Supabase with static fallback
-  const [portfolioItems, setPortfolioItems] = useState<any[]>(portfolioItemsStatic);
+  const [portfolioItems, setPortfolioItems] =
+    useState<any[]>(portfolioItemsStatic);
 
   // The testimonials array below will be renamed; we initialise dynamic state first
   const [testimonials, setTestimonials] = useState<any[]>([]);
+  // Preloader state to wait for all video elements to be ready
+  const [pageLoading, setPageLoading] = useState(true);
 
   // Initialize AOS once on mount (dynamic import to avoid type issues)
   useEffect(() => {
@@ -74,6 +78,45 @@ export default function IdeatorEventsWebsite() {
       }
     };
     loadAnimation();
+  }, []);
+
+  useEffect(() => {
+    // Wait until all <video> elements on the page can play through
+    const videos = Array.from(
+      document.querySelectorAll("video")
+    ) as HTMLVideoElement[];
+
+    if (videos.length === 0) {
+      setPageLoading(false);
+      return;
+    }
+
+    let loaded = 0;
+    const handleLoaded = () => {
+      loaded += 1;
+      if (loaded === videos.length) {
+        setPageLoading(false);
+      }
+    };
+
+    videos.forEach((video) => {
+      if (video.readyState >= 3) {
+        // Already loaded enough data
+        handleLoaded();
+      } else {
+        video.addEventListener("canplaythrough", handleLoaded, { once: true });
+      }
+    });
+
+    // Safety fallback: hide loader after 7 s in case of network issues
+    const timeout = setTimeout(() => setPageLoading(false), 7000);
+
+    return () => {
+      videos.forEach((video) =>
+        video.removeEventListener("canplaythrough", handleLoaded)
+      );
+      clearTimeout(timeout);
+    };
   }, []);
 
   const companies = [
@@ -126,11 +169,14 @@ export default function IdeatorEventsWebsite() {
       // Portfolio data
       const { data: portfolioData, error: portfolioError } = await supabase
         .from("portfolio")
-        .select("id, title, location, image, videourl, category") 
+        .select("id, title, location, image, videourl, category")
         .order("id", { ascending: false });
 
       if (portfolioError) {
-        console.error("Failed to fetch portfolio items:", portfolioError.message);
+        console.error(
+          "Failed to fetch portfolio items:",
+          portfolioError.message
+        );
       } else if (portfolioData) {
         setPortfolioItems(portfolioData);
       }
@@ -142,7 +188,10 @@ export default function IdeatorEventsWebsite() {
         .order("id", { ascending: false });
 
       if (testimonialError) {
-        console.error("Failed to fetch testimonials:", testimonialError.message);
+        console.error(
+          "Failed to fetch testimonials:",
+          testimonialError.message
+        );
       } else if (testimonialData) {
         setTestimonials(testimonialData);
       }
@@ -178,6 +227,7 @@ export default function IdeatorEventsWebsite() {
 
   return (
     <div className="min-h-screen bg-[#efede7]">
+      {pageLoading && <Preloader />}
       {/* Header */}
       <Header />
 
@@ -245,53 +295,79 @@ export default function IdeatorEventsWebsite() {
 
               <div className="space-y-6 text-lg text-[#0a2449]/70 leading-relaxed text-justify">
                 <p>
-                  Ideator Events was born from a bold vision: to transform the corporate events landscape across Asia and the Middle East. Starting in Kochi, we have grown over the last 18 years into a global force with offices and production houses in India, Dubai, Bangkok, and Indonesia.
+                  Ideator Events emerged from an audacious vision:
+                  revolutionizing the corporate events landscape across Asia and
+                  the Middle East. Originating in Kochi, we have evolved over 18
+                  transformative years into a global powerhouse with strategic
+                  offices and production facilities in India, Dubai, Bangkok,
+                  and Indonesia.
                 </p>
 
                 <p>
-                  At Ideator, we believe every event tells a story. From intimate executive retreats to grand international conferences and spectacular concerts, we craft experiences with creativity, precision, and passion.
+                  Our philosophy at Ideator is simple yet profound: every event
+                  is a narrative waiting to unfold. Whether orchestrating
+                  intimate executive retreats, grand international conferences,
+                  or spectacular concerts, we meticulously craft experiences
+                  that blend creativity, precision, and unbridled passion.
                 </p>
 
                 <p>
-                  Guided by our Managing Director, Mr. Mathews Joseph — a seasoned hotelier — we bring together hospitality, entertainment, and seamless execution.
+                  Under the strategic leadership of our Managing Director, Mr.
+                  Mathews Joseph — a distinguished hotelier — we seamlessly
+                  integrate hospitality, entertainment, and flawless execution
+                  into every project we undertake.
                 </p>
 
                 <p>
-                  We are part of a powerful creative ecosystem alongside our sister companies:
+                  We are more than an events company; we are a dynamic creative
+                  ecosystem comprising three interconnected enterprises:
+                </p>
+
+                <ul className="list-disc pl-6">
+                  <li>
+                    Festival Cinema: A pioneering force in Indian film
+                    production
+                  </li>
+                  <li>
+                    Forwardslash Digital: Innovators in digital and social media
+                    marketing strategies
+                  </li>
+                </ul>
+
+                <p>
+                  Our collective mission transcends individual boundaries: to
+                  inspire, connect, and create extraordinary experiences that
+                  resonate across industries and platforms.
                 </p>
 
                 <p>
-                  Festival Cinema, specializing in Indian film production.
+                  With comprehensive in-house design studios and production
+                  units, we guarantee meticulous execution without external
+                  dependencies. Our pristine zero-complaint record stands as a
+                  testament to our unwavering commitment to quality and client
+                  satisfaction.
                 </p>
 
                 <p>
-                  Forwardslash Digital, focusing on digital and social media marketing.
-                </p>
-
-                <p>
-                  Our three companies share one united motto: to inspire, connect, and create unforgettable experiences across industries and platforms.
-                </p>
-
-                <p>
-                  With in-house design studios and production units, we ensure every detail is flawlessly executed without third-party dependencies. We take pride in our zero-complaint record, a reflection of our commitment to quality and client satisfaction.
-                </p>
-
-                <p>
-                  At Ideator Events, we believe a successful event is all about the guest experience. With over 18 years of expertise and a dedicated team, we turn ideas into unforgettable moments — so you can focus on enjoying the celebration.
+                  At Ideator Events, we understand that a truly exceptional
+                  event is defined by the guest experience. Leveraging over 18
+                  years of expertise and a passionate, dedicated team, we
+                  transform abstract ideas into unforgettable moments — allowing
+                  you to immerse yourself fully in the celebration.
                 </p>
               </div>
             </div>
 
             {/* Right Content - Animation */}
             <div className="flex flex-col gap-12 px-4 md:px-0">
-              <div className="relative">
+              <div className="relative" data-aos="fade-up" data-aos-delay="100">
                 <video
                   src="/about.mp4"
                   autoPlay
                   loop
                   muted
                   playsInline
-                  className="w-full max-w-[500px] mx-auto rounded-3xl"
+                  className="w-full max-w-[500px] mx-auto rounded-3xl shadow-2xl"
                 />
               </div>
 
@@ -319,14 +395,14 @@ export default function IdeatorEventsWebsite() {
                   <div className="text-sm font-medium text-[#0a2449]/70">
                     Events Delivered
                   </div>
-                </div>  
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-        <ServicesCarousel />
+      <ServicesCarousel />
 
       {/* Portfolio */}
       <section id="portfolio" className="py-20 bg-[#efede7]">
@@ -349,7 +425,7 @@ export default function IdeatorEventsWebsite() {
               <div
                 key={index}
                 className="group cursor-pointer"
-                onClick={() => item.videourl && setVideoModalUrl(item.videourl)}  
+                onClick={() => item.videourl && setVideoModalUrl(item.videourl)}
               >
                 <div className="relative overflow-hidden rounded-3xl">
                   <Image
@@ -378,13 +454,13 @@ export default function IdeatorEventsWebsite() {
           {/* View All Portfolio button */}
           <div className="text-center mt-16">
             <Link href="/portfolio">
-            <Button
-              size="lg"
-              className="bg-[#0a2449] text-[#efede7] hover:bg-[#0a2449]/90 rounded-full group px-8"
-            >
+              <Button
+                size="lg"
+                className="bg-[#0a2449] text-[#efede7] hover:bg-[#0a2449]/90 rounded-full group px-8"
+              >
                 View All Portfolio
-              <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-            </Button>
+                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
+              </Button>
             </Link>
           </div>
 
@@ -440,27 +516,35 @@ export default function IdeatorEventsWebsite() {
             </div>
             <div
               className="flex items-stretch animate-marquee-scroll group whitespace-normal hover:[animation-play-state:paused]"
-              style={{ animation: 'marquee-scroll 15s linear infinite' }}
+              style={{ animation: "marquee-scroll 15s linear infinite" }}
             >
               {testimonials.concat(testimonials).map((testimonial, index) => (
                 <div
                   key={index}
                   className="relative min-w-[280px] sm:min-w-[320px] md:min-w-[360px] lg:min-w-[380px] max-w-xs sm:max-w-sm md:max-w-md bg-white shadow-[0_4px_24px_rgba(10,36,73,0.03)] rounded-[40px] md:rounded-[60px] p-6 sm:p-8 md:p-10 flex flex-col justify-between mx-3 sm:mx-4 md:mx-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_8px_40px_rgba(10,36,73,0.06)]"
                   onMouseEnter={() => {
-                    const parent = document.querySelector('.animate-marquee-scroll') as HTMLElement;
-                    if (parent) parent.style.animationPlayState = 'paused';
+                    const parent = document.querySelector(
+                      ".animate-marquee-scroll"
+                    ) as HTMLElement;
+                    if (parent) parent.style.animationPlayState = "paused";
                   }}
                   onMouseLeave={() => {
-                    const parent = document.querySelector('.animate-marquee-scroll') as HTMLElement;
-                    if (parent) parent.style.animationPlayState = 'running';
+                    const parent = document.querySelector(
+                      ".animate-marquee-scroll"
+                    ) as HTMLElement;
+                    if (parent) parent.style.animationPlayState = "running";
                   }}
                   onTouchStart={() => {
-                    const parent = document.querySelector('.animate-marquee-scroll') as HTMLElement;
-                    if (parent) parent.style.animationPlayState = 'paused';
+                    const parent = document.querySelector(
+                      ".animate-marquee-scroll"
+                    ) as HTMLElement;
+                    if (parent) parent.style.animationPlayState = "paused";
                   }}
                   onTouchEnd={() => {
-                    const parent = document.querySelector('.animate-marquee-scroll') as HTMLElement;
-                    if (parent) parent.style.animationPlayState = 'running';
+                    const parent = document.querySelector(
+                      ".animate-marquee-scroll"
+                    ) as HTMLElement;
+                    if (parent) parent.style.animationPlayState = "running";
                   }}
                 >
                   <div className="flex gap-1.5 sm:gap-2 mb-6 sm:mb-8">
@@ -502,21 +586,33 @@ export default function IdeatorEventsWebsite() {
             </div>
             <style jsx>{`
               @keyframes marquee-scroll {
-                0% { transform: translateX(calc(0% + 0.75rem)); }
-                100% { transform: translateX(calc(-50% - 0.75rem)); }
-              }
-              
-              @media (min-width: 640px) {
-                @keyframes marquee-scroll {
-                  0% { transform: translateX(calc(0% + 1rem)); }
-                  100% { transform: translateX(calc(-50% - 1rem)); }
+                0% {
+                  transform: translateX(calc(0% + 0.75rem));
+                }
+                100% {
+                  transform: translateX(calc(-50% - 0.75rem));
                 }
               }
-              
+
+              @media (min-width: 640px) {
+                @keyframes marquee-scroll {
+                  0% {
+                    transform: translateX(calc(0% + 1rem));
+                  }
+                  100% {
+                    transform: translateX(calc(-50% - 1rem));
+                  }
+                }
+              }
+
               @media (min-width: 768px) {
                 @keyframes marquee-scroll {
-                  0% { transform: translateX(calc(0% + 1.5rem)); }
-                  100% { transform: translateX(calc(-50% - 1.5rem)); }
+                  0% {
+                    transform: translateX(calc(0% + 1.5rem));
+                  }
+                  100% {
+                    transform: translateX(calc(-50% - 1.5rem));
+                  }
                 }
               }
             `}</style>
