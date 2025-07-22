@@ -242,8 +242,7 @@ export default function IdeatorEventsWebsite() {
           width="1280"
           height="720"
           poster="/fallback.avif"
-          style={{ width: '100%', height: 'auto' }}
-          className="absolute inset-0 object-cover scale-105 animate-slow-zoom"
+          className="absolute inset-0 w-full h-full object-cover scale-105 animate-slow-zoom"
         >
           <source src="/banner_compressed.mp4" type="video/mp4" />
           <source src="/banner_compressed.webm" type="video/webm" />
@@ -380,28 +379,28 @@ export default function IdeatorEventsWebsite() {
                 </video>
               </div>
 
-              <div className="grid grid-cols-3 gap-8">
-                <div className="bg-[#0a2449]/5 rounded-2xl p-6 text-center transition-all hover:bg-[#0a2449]/10">
-                  <div className="text-4xl font-bold text-[#0a2449] mb-2">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+                <div className="bg-[#0a2449]/5 rounded-2xl p-4 sm:p-5 md:p-6 text-center transition-all hover:bg-[#0a2449]/10">
+                  <div className="text-3xl sm:text-4xl font-bold text-[#0a2449] mb-1 sm:mb-2">
                     4
                   </div>
-                  <div className="text-sm font-medium text-[#0a2449]/70">
+                  <div className="text-xs sm:text-sm font-medium text-[#0a2449]/70">
                     Global Offices
                   </div>
                 </div>
-                <div className="bg-[#0a2449]/5 rounded-2xl p-6 text-center transition-all hover:bg-[#0a2449]/10">
-                  <div className="text-4xl font-bold text-[#0a2449] mb-2">
+                <div className="bg-[#0a2449]/5 rounded-2xl p-4 sm:p-5 md:p-6 text-center transition-all hover:bg-[#0a2449]/10">
+                  <div className="text-3xl sm:text-4xl font-bold text-[#0a2449] mb-1 sm:mb-2">
                     15+
                   </div>
-                  <div className="text-sm font-medium text-[#0a2449]/70">
+                  <div className="text-xs sm:text-sm font-medium text-[#0a2449]/70">
                     Years of Excellence
                   </div>
                 </div>
-                <div className="bg-[#0a2449]/5 rounded-2xl p-6 text-center transition-all hover:bg-[#0a2449]/10">
-                  <div className="text-4xl font-bold text-[#0a2449] mb-2">
+                <div className="bg-[#0a2449]/5 rounded-2xl p-4 sm:p-5 md:p-6 text-center transition-all hover:bg-[#0a2449]/10">
+                  <div className="text-3xl sm:text-4xl font-bold text-[#0a2449] mb-1 sm:mb-2">
                     500+
                   </div>
-                  <div className="text-sm font-medium text-[#0a2449]/70">
+                  <div className="text-xs sm:text-sm font-medium text-[#0a2449]/70">
                     Events Delivered
                   </div>
                 </div>
