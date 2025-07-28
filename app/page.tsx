@@ -243,11 +243,11 @@ export default function IdeatorEventsWebsite() {
           playsInline
           width="1920"
           height="1080"
-          poster="/fallback.avif"
+          poster="/banner_compressed.mp4"
           className="absolute inset-0 w-full h-full object-cover z-0"
           style={{ objectPosition: "center" }}
         >
-          <source src="/banner.mp4" type="video/mp4" />
+          <source src="/banner_compressed.mp4" type="video/mp4" />
           <source src="/banner.webm" type="video/webm" />
         </video>
         {/* Optional: subtle overlay for readability */}
