@@ -1,6 +1,53 @@
 "use client";
 
 import { motion } from "framer-motion";
+import ReactCountryFlag from "react-country-flag";
+
+// Our offices data (from ContactSidebar)
+const offices = [
+  {
+    city: 'Kochi',
+    country: 'India',
+    code: 'IN',
+    lat: 9.9312,
+    lng: 76.2673,
+    featured: true,
+  },
+  {
+    city: 'Dubai',
+    country: 'UAE',
+    code: 'AE',
+    lat: 25.2048,
+    lng: 55.2708,
+  },
+  {
+    city: 'Bangkok',
+    country: 'Thailand',
+    code: 'TH',
+    lat: 13.7563,
+    lng: 100.5018,
+  },
+  {
+    city: 'Bali',
+    country: 'Indonesia',
+    code: 'ID',
+    lat: -8.3405,
+    lng: 115.0920,
+  },
+];
+
+// Helper: Convert lat/lng to x/y on a 2D circle (simple equirectangular projection)
+function latLngToXY(lat: number, lng: number, size: number) {
+  // Center of the globe
+  const r = size / 2 * 0.92; // 92% of radius for padding
+  // Convert degrees to radians
+  const latRad = (lat * Math.PI) / 180;
+  const lngRad = (lng * Math.PI) / 180;
+  // Spherical to Cartesian (simple, not 3D)
+  const x = r * Math.cos(latRad) * Math.sin(lngRad) + size / 2;
+  const y = r * Math.sin(latRad) * -1 + size / 2;
+  return { x, y };
+}
 
 interface GlobeProps {
   className?: string;
@@ -21,13 +68,13 @@ export default function Globe({ className = "", size = 400, speed = 1 }: GlobePr
       <div className="relative w-full h-full">
         {/* Base Globe */}
         <div className="absolute inset-0 rounded-full bg-gradient-to-br from-[#0a2449]/10 to-[#0a2449]/5 border-2 border-[#0a2449]/30" />
-        
+
         {/* Latitude Lines */}
         <div className="absolute inset-0 rounded-full border border-[#0a2449]/20" style={{ margin: '20%' }} />
         <div className="absolute inset-0 rounded-full border border-[#0a2449]/20" style={{ margin: '40%' }} />
         <div className="absolute inset-0 rounded-full border border-[#0a2449]/20" style={{ margin: '60%' }} />
         <div className="absolute inset-0 rounded-full border border-[#0a2449]/20" style={{ margin: '80%' }} />
-        
+
         {/* Longitude Lines */}
         <motion.div
           className="absolute inset-0"
@@ -44,7 +91,7 @@ export default function Globe({ className = "", size = 400, speed = 1 }: GlobePr
             />
           ))}
         </motion.div>
-        
+
         {/* Rotating Dots */}
         <motion.div
           className="absolute inset-0"
@@ -72,10 +119,10 @@ export default function Globe({ className = "", size = 400, speed = 1 }: GlobePr
             />
           ))}
         </motion.div>
-        
+
         {/* Center Point */}
         <div className="absolute top-1/2 left-1/2 w-4 h-4 bg-[#0a2449]/80 rounded-full transform -translate-x-1/2 -translate-y-1/2" />
-        
+
         {/* Floating Particles */}
         <motion.div
           className="absolute inset-0"
@@ -103,8 +150,52 @@ export default function Globe({ className = "", size = 400, speed = 1 }: GlobePr
             />
           ))}
         </motion.div>
+
+        {/* Office Markers */}
+        {offices.map((office, idx) => {
+          const { x, y } = latLngToXY(office.lat, office.lng, size);
+          return (
+            <motion.div
+              key={office.city}
+              className={`absolute flex flex-col items-center group`}
+              style={{
+                left: x,
+                top: y,
+                zIndex: 10,
+                pointerEvents: "auto",
+              }}
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ delay: 0.2 + idx * 0.1, duration: 0.5 }}
+            >
+              <div
+                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shadow-lg
+                  ${office.featured ? "bg-[#0a2449] border-[#0a2449]" : "bg-white border-[#0a2449]/60"}
+                  group-hover:scale-110 transition-transform duration-200`}
+                title={`${office.city}, ${office.country}`}
+              >
+                <ReactCountryFlag
+                  countryCode={office.code}
+                  svg
+                  style={{
+                    width: "1.1em",
+                    height: "1.1em",
+                    borderRadius: "50%",
+                  }}
+                  aria-label={office.country}
+                />
+              </div>
+              {/* Tooltip */}
+              <div className="absolute left-1/2 top-full mt-2 -translate-x-1/2 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-200 z-20">
+                <div className="px-2 py-1 rounded bg-[#0a2449] text-white text-xs shadow-lg whitespace-nowrap">
+                  {office.city}, {office.country}
+                </div>
+              </div>
+            </motion.div>
+          );
+        })}
       </div>
-      
+
       {/* Connection Lines */}
       <div className="absolute inset-0 pointer-events-none">
         {[...Array(4)].map((_, i) => (
@@ -128,4 +219,4 @@ export default function Globe({ className = "", size = 400, speed = 1 }: GlobePr
       </div>
     </motion.div>
   );
-} 
+}
