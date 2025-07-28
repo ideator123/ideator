@@ -1,136 +1,49 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import React, { useState, useEffect, useCallback, useMemo } from "react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { SERVICES } from "@/data/services";
+import ServiceCard from "./ServiceCard";
 
-interface Service {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-}
-
-const SERVICES: Service[] = [
-  {
-    id: 1,
-    title: "HOTEL GROUP BOOKINGS AND GROUND MANAGEMENT",
-    description: "Comprehensive accommodation and ground management services",
-    image: "/hotel.mp4"
-  },
-  {
-    id: 2,
-    title: "CORPORATE EVENTS & CONFERENCES",
-    description: "Professional gatherings that drive meaningful business connections",
-    image: "/conference.mp4"
-  },
-  {
-    id: 3,
-    title: "PRODUCT LAUNCHES & BRAND ACTIVATIONS",
-    description: "Strategic events that create buzz and elevate brand presence",
-    image: "/productlaunch.mp4"
-  },
-  {
-    id: 4,
-    title: "EXHIBITIONS & BRANDING",
-    description: "Impactful displays and experiences that showcase your brand",
-    image: "/exhibition.mp4"
-  },
-  {
-    id: 5,
-    title: "CONCERTS & ARTIST MANAGEMENT",
-    description: "End-to-end entertainment event and talent coordination",
-    image: "/concerts.mp4"
-  },
-  {
-    id: 6,
-    title: "INTERNATIONAL TOURS AND EVENTS",
-    description: "Expertly planned global business travel and events",
-    image: "/tours.mp4"
-  },
-  {
-    id: 7,
-    title: "AWARD SHOWS & GALA DINNERS",
-    description: "Prestigious ceremonies that celebrate achievement in style",
-    image: "/awards.mp4"
-  },
-  {
-    id: 8,
-    title: "FASHION SHOWS & LIFESTYLE EVENTS",
-    description: "Sophisticated showcases of style and luxury experiences",
-    image: "/fashion_compressed.mp4"
-  }
-];
-
-const ServiceCard = React.memo(
-  ({ service, isActive = false }: { service: Service; isActive?: boolean }) => {
-    const isVideo = service.image.endsWith('.mp4');
-    
-    return (
-      <div
-        className={`relative h-full aspect-[3/4] max-h-full ${
-          isActive
-            ? 'lg:h-auto lg:w-[750px] xl:w-[900px] 2xl:w-[1100px] max-w-none transition-all duration-300'
-            : 'max-w-[350px] transition-all duration-300'
-        }
-        rounded-2xl overflow-hidden shadow-2xl shadow-black/50
-        bg-gray-800`}
-      >
-        {isVideo ? (
-          <video
-            src={service.image}
-            autoPlay
-            muted
-            loop
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-        ) : (
-          <img
-            src={service.image}
-            alt={service.title}
-            className="absolute inset-0 w-full h-full object-cover"
-            loading="lazy"
-          />
-        )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
-      </div>
-    );
-  }
-);
-ServiceCard.displayName = 'ServiceCard';
+const AUTOPLAY_INTERVAL = 4000;
+const MIN_SWIPE_DISTANCE = 50;
+const VISIBLE_OFFSET = 2;
 
 const ServicesCarousel = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlay, setIsAutoPlay] = useState(true);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
-  const [scrollLeft, setScrollLeft] = useState(0);
-  const autoPlayInterval = 4000;
+  const [touchStart, setTouchStart] = useState<number | null>(null);
+  const [touchEnd, setTouchEnd] = useState<number | null>(null);
 
   const nextSlide = useCallback(() => {
     setCurrentIndex((prevIndex) => (prevIndex + 1) % SERVICES.length);
   }, []);
 
   const prevSlide = useCallback(() => {
-    setCurrentIndex((prevIndex) => (prevIndex - 1 + SERVICES.length) % SERVICES.length);
+    setCurrentIndex(
+      (prevIndex) => (prevIndex - 1 + SERVICES.length) % SERVICES.length
+    );
   }, []);
 
+  // Autoplay effect
   useEffect(() => {
     if (!isAutoPlay) return;
-    const timer = setInterval(nextSlide, autoPlayInterval);
+    const timer = setInterval(nextSlide, AUTOPLAY_INTERVAL);
     return () => clearInterval(timer);
-  }, [isAutoPlay, nextSlide, autoPlayInterval]);
+  }, [isAutoPlay, nextSlide]);
 
-  // Add keyboard navigation
+  // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      if (e.key === "ArrowRight" || e.key === "ArrowDown") {
         nextSlide();
-      } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
         prevSlide();
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [nextSlide, prevSlide]);
 
   const handleIndicatorClick = useCallback((index: number) => {
@@ -143,62 +56,86 @@ const ServicesCarousel = () => {
     setIsDragging(false);
   }, []);
 
-  // Mouse drag handlers for desktop
-  const handleMouseDown = (e: React.MouseEvent) => {
+  // Mouse drag handlers
+  const handleMouseDown = useCallback((e: React.MouseEvent) => {
     setIsDragging(true);
-    setStartX(e.pageX - scrollLeft);
-  };
+    setStartX(e.pageX);
+  }, []);
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
-    e.preventDefault();
-    const x = e.pageX - startX;
-    if (x > 100) {
-      prevSlide();
-      setIsDragging(false);
-    } else if (x < -100) {
-      nextSlide();
-      setIsDragging(false);
-    }
-  };
+  const handleMouseMove = useCallback(
+    (e: React.MouseEvent) => {
+      if (!isDragging) return;
+      e.preventDefault();
+      const x = e.pageX - startX;
+      if (x > MIN_SWIPE_DISTANCE) {
+        prevSlide();
+        setIsDragging(false);
+      } else if (x < -MIN_SWIPE_DISTANCE) {
+        nextSlide();
+        setIsDragging(false);
+      }
+    },
+    [isDragging, startX, nextSlide, prevSlide]
+  );
 
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     setIsDragging(false);
-  };
+  }, []);
 
-  // Touch handlers for mobile
-  const [touchStart, setTouchStart] = useState<number | null>(null);
-  const [touchEnd, setTouchEnd] = useState<number | null>(null);
-  const minSwipeDistance = 50;
-
-  const handleTouchStart = (e: React.TouchEvent) => {
+  // Touch handlers
+  const handleTouchStart = useCallback((e: React.TouchEvent) => {
     setTouchEnd(null);
     setTouchStart(e.targetTouches[0].clientX);
-  };
+  }, []);
 
-  const handleTouchMove = (e: React.TouchEvent) => {
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
     setTouchEnd(e.targetTouches[0].clientX);
-  };
+  }, []);
 
-  const handleTouchEnd = () => {
+  const handleTouchEnd = useCallback(() => {
     if (!touchStart || !touchEnd) return;
     const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
 
-    if (isLeftSwipe) {
+    if (distance > MIN_SWIPE_DISTANCE) {
       nextSlide();
-    } else if (isRightSwipe) {
+    } else if (distance < -MIN_SWIPE_DISTANCE) {
       prevSlide();
     }
-  };
+  }, [touchStart, touchEnd, nextSlide, prevSlide]);
 
-  return (
-    <section className="relative w-full min-h-[25vh] md:min-h-[20vh] overflow-hidden bg-gray-900 text-white flex flex-col justify-center items-center p-4 sm:p-6 md:p-8">
-      {/* Animated Background */}
+  // Memoize the card style calculation function
+  const getCardStyle = useCallback(
+    (offset: number, isVisible: boolean, isActive: boolean) => {
+      if (!isVisible) {
+        return {
+          transform: `translateX(${offset > 0 ? 200 : -200}%) scale(0.5)`,
+          opacity: 0,
+          visibility: "hidden" as const,
+        };
+      }
+
+      const xOffset = offset * 55;
+      const scale = isActive ? 1 : 1 - Math.abs(offset) * 0.25;
+      const z = 100 - Math.abs(offset);
+      const cardOpacity = Math.abs(offset) > 1 ? 0 : 1;
+
+      return {
+        transform: `translateX(${xOffset}%) scale(${scale})`,
+        zIndex: z,
+        opacity: cardOpacity,
+        transition: "all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+        visibility: "visible" as const,
+      };
+    },
+    []
+  );
+
+  // Memoize the background videos
+  const backgroundVideos = useMemo(
+    () => (
       <div className="absolute inset-0 w-full h-full scale-110">
         {SERVICES.map((service, index) => {
-          const isVideo = service.image.endsWith('.mp4');
+          const isVideo = service.image.endsWith(".mp4");
           return (
             <div
               key={service.id}
@@ -208,44 +145,56 @@ const ServicesCarousel = () => {
               }}
             >
               {isVideo ? (
-                <video
-                  src={service.image}
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  className="w-full h-full object-cover"
-                />
+                <>
+                  <video
+                    src={service.image}
+                    autoPlay
+                    muted
+                    loop
+                    playsInline
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/50" />
+                </>
               ) : (
-                <div
-                  style={{
-                    backgroundImage: `url(${service.image})`,
-                    width: '100%',
-                    height: '100%',
-                  }}
-                />
+                <>
+                  <div
+                    style={{
+                      backgroundImage: `url(${service.image})`,
+                      width: "100%",
+                      height: "100%",
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-black/50" />
+                </>
               )}
             </div>
           );
         })}
       </div>
+    ),
+    [currentIndex]
+  );
+
+  return (
+    <section className="relative w-full min-h-[80vh] md:min-h-[20vh] overflow-hidden bg-gray-900 text-white flex flex-col justify-center items-center p-4 sm:p-6 md:p-8">
+      {backgroundVideos}
       <div className="absolute inset-0 bg-black/70 backdrop-blur-lg" />
 
-      {/* Main Content */}
       <div
         className="relative z-10 w-full h-full flex flex-col justify-center items-center"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        {/* Header */}
         <div className="text-center mb-6 md:mb-10">
-          <span className="text-sm font-semibold tracking-widest text-white/60 uppercase">Our Services</span>
+          <span className="text-sm font-semibold tracking-widest text-white/60 uppercase">
+            Our Services
+          </span>
           <h1 className="text-2xl sm:text-3xl md:text-3xl font-extrabold mt-2 bg-clip-text text-transparent bg-gradient-to-b from-white to-gray-300">
             What We Do
           </h1>
         </div>
 
-        {/* Carousel */}
         <div
           className="relative w-full h-[25vh] max-h-[250px] lg:h-[35vh] lg:max-h-[400px] xl:h-[45vh] xl:max-h-[550px] 2xl:h-[50vh] 2xl:max-h-[650px] flex items-center justify-center cursor-grab active:cursor-grabbing"
           onTouchStart={handleTouchStart}
@@ -256,39 +205,20 @@ const ServicesCarousel = () => {
           onMouseUp={handleMouseUp}
           onMouseLeave={handleMouseUp}
         >
-          <div className="relative w-full h-full" style={{ perspective: '1000px' }}>
+          <div
+            className="relative w-full h-full"
+            style={{ perspective: "1000px" }}
+          >
             {SERVICES.map((service, index) => {
               const offset = index - currentIndex;
-              const isVisible = Math.abs(offset) <= 2;
+              const isVisible = Math.abs(offset) <= VISIBLE_OFFSET;
               const isActive = index === currentIndex;
-
-              const getCardStyle = () => {
-                if (!isVisible)
-                  return {
-                    transform: `translateX(${offset > 0 ? 200 : -200}%) scale(0.5)`,
-                    opacity: 0,
-                    visibility: 'hidden' as const,
-                  };
-
-                const xOffset = offset * 55;
-                const scale = isActive ? 1 : 1 - Math.abs(offset) * 0.25;
-                const z = 100 - Math.abs(offset);
-                const cardOpacity = Math.abs(offset) > 1 ? 0 : 1;
-
-                return {
-                  transform: `translateX(${xOffset}%) scale(${scale})`,
-                  zIndex: z,
-                  opacity: cardOpacity,
-                  transition: 'all 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
-                  visibility: 'visible' as const,
-                };
-              };
 
               return (
                 <div
                   key={service.id}
                   className="absolute top-0 left-0 w-full h-full flex items-center justify-center"
-                  style={getCardStyle()}
+                  style={getCardStyle(offset, isVisible, isActive)}
                 >
                   <ServiceCard service={service} isActive={isActive} />
                 </div>
@@ -297,25 +227,6 @@ const ServicesCarousel = () => {
           </div>
         </div>
 
-        {/* Text Content for Active Slide */}
-        <div className="relative w-full max-w-xl text-center mt-6 md:mt-10 h-28 md:h-32">
-          {SERVICES.map((service, index) => (
-            <div
-              key={service.id}
-              className="absolute inset-0 transition-opacity duration-500 flex flex-col items-center justify-start"
-              style={{ opacity: index === currentIndex ? 1 : 0, pointerEvents: index === currentIndex ? 'auto' : 'none' }}
-            >
-              <h3 className="text-xl sm:text-2xl font-bold uppercase tracking-wider">
-                {service.title}
-              </h3>
-              <p className="mt-2 text-sm sm:text-base text-white/80 max-w-md">
-                {service.description}
-              </p>
-            </div>
-          ))}
-        </div>
-
-        {/* Navigation and Indicators */}
         <div className="flex flex-col items-center mt-auto pt-4">
           <div className="flex items-center space-x-4">
             <button
@@ -339,7 +250,9 @@ const ServicesCarousel = () => {
                 key={index}
                 onClick={() => handleIndicatorClick(index)}
                 className={`w-2 h-2 rounded-full transition-all duration-300 ${
-                  index === currentIndex ? 'bg-white scale-125' : 'bg-white/40 hover:bg-white/60'
+                  index === currentIndex
+                    ? "bg-white scale-125"
+                    : "bg-white/40 hover:bg-white/60"
                 }`}
                 aria-label={`Go to service ${index + 1}`}
               />

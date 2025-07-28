@@ -10,10 +10,10 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const sections = [
-    { name: 'About', href: '#about' },
-    { name: 'Services', href: '#services' },
-    { name: 'Portfolio', href: '#portfolio' },
-    { name: 'Contact', href: '#contact' }
+    { name: 'About', href: '/about' },
+    { name: 'Services', href: '/services' },
+    { name: 'Portfolio', href: '/portfolio' },
+    { name: 'Contact', href: '/contact' }
   ];
 
   return (
@@ -22,13 +22,15 @@ const Header = () => {
         <div className="flex items-center justify-between">
           {/* Logo */}
           <div className="flex items-center">
-            <Image
-              src="/logo.png"
-              alt="Ideator Events Logo"
-              width={240}
-              height={60}
-              className="h-12 w-auto brightness-200"
-            />
+            <Link href="/">
+              <Image
+                src="/logo.png"
+                alt="Ideator Events Logo"
+                width={240}
+                height={60}
+                className="h-12 w-auto brightness-200 cursor-pointer"
+              />
+            </Link>
           </div>
 
           {/* Desktop Menu */}
@@ -42,9 +44,11 @@ const Header = () => {
                 {section.name}
               </Link>
             ))}
-            <Button className="bg-[#efede7] hover:bg-[#efede7]/90 text-[#0a2449] px-8 py-2.5 rounded-full transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl">
-              Get in Touch
-            </Button>
+            <Link href="/contact">
+              <Button className="bg-[#efede7] hover:bg-[#efede7]/90 text-[#0a2449] px-8 py-2.5 rounded-full transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl">
+                Get in Touch
+              </Button>
+            </Link>
           </div>
 
           {/* Mobile Menu Button */}
@@ -70,9 +74,11 @@ const Header = () => {
                   {section.name}
                 </Link>
               ))}
-              <Button className="bg-[#efede7] hover:bg-[#efede7]/90 text-[#0a2449] py-3 rounded-full transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl">
-                Get in Touch
-              </Button>
+              <Link href="/contact">
+                <Button className="bg-[#efede7] hover:bg-[#efede7]/90 text-[#0a2449] py-3 rounded-full transition-all duration-300 text-sm font-medium shadow-lg hover:shadow-xl">
+                  Get in Touch
+                </Button>
+              </Link>
             </div>
           </div>
         )}

@@ -1,0 +1,190 @@
+/* Mobile-First CSS Utilities */
+/* Hardware acceleration and performance optimizations */
+
+/* Touch-friendly interactions */
+.touch-optimized {
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+/* Smooth scrolling with momentum */
+.smooth-scroll {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+}
+
+/* Hardware acceleration */
+.gpu-accelerated {
+  transform: translate3d(0, 0, 0);
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* Container queries (progressive enhancement) */
+@supports (container-type: inline-size) {
+  .container-responsive {
+    container-type: inline-size;
+  }
+  
+  @container (max-width: 480px) {
+    .mobile-stack {
+      flex-direction: column;
+      gap: 1rem;
+    }
+  }
+  
+  @container (min-width: 481px) and (max-width: 768px) {
+    .tablet-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+  }
+}
+
+/* Modern viewport units */
+.full-viewport {
+  min-height: 100dvh; /* Dynamic viewport height */
+  width: 100dvw; /* Dynamic viewport width */
+}
+
+.safe-area {
+  padding-top: env(safe-area-inset-top);
+  padding-right: env(safe-area-inset-right);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+}
+
+/* Gesture and animation utilities */
+.swipe-hint {
+  position: relative;
+}
+
+.swipe-hint::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 30px;
+  height: 3px;
+  background: currentColor;
+  border-radius: 2px;
+  opacity: 0.3;
+  animation: swipe-pulse 2s ease-in-out infinite;
+}
+
+@keyframes swipe-pulse {
+  0%, 100% { opacity: 0.3; transform: translateX(-50%) scaleX(1); }
+  50% { opacity: 0.6; transform: translateX(-50%) scaleX(1.2); }
+}
+
+/* Reduced motion preferences */
+@media (prefers-reduced-motion: reduce) {
+  .motion-safe {
+    animation: none !important;
+    transition: none !important;
+  }
+  
+  .motion-safe * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+  }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+  .contrast-support {
+    border: 2px solid;
+    background: Canvas;
+    color: CanvasText;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .auto-dark {
+    background: #0a0a0a;
+    color: #ffffff;
+  }
+}
+
+/* Focus management for accessibility */
+.focus-visible-only:focus:not(:focus-visible) {
+  outline: none;
+}
+
+.focus-visible-only:focus-visible {
+  outline: 2px solid #0066cc;
+  outline-offset: 2px;
+}
+
+/* Performance optimizations */
+.lazy-load {
+  content-visibility: auto;
+  contain-intrinsic-size: 300px;
+}
+
+/* Mobile typography scale */
+.text-mobile-xs { font-size: 0.75rem; line-height: 1rem; }
+.text-mobile-sm { font-size: 0.875rem; line-height: 1.25rem; }
+.text-mobile-base { font-size: 1rem; line-height: 1.5rem; }
+.text-mobile-lg { font-size: 1.125rem; line-height: 1.75rem; }
+.text-mobile-xl { font-size: 1.25rem; line-height: 1.75rem; }
+.text-mobile-2xl { font-size: 1.5rem; line-height: 2rem; }
+.text-mobile-3xl { font-size: 1.875rem; line-height: 2.25rem; }
+.text-mobile-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+
+/* Spacing optimized for touch */
+.touch-target {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0.75rem;
+}
+
+/* Modern blur effects */
+.modern-blur {
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.modern-blur-dark {
+  backdrop-filter: blur(10px) saturate(180%);
+  -webkit-backdrop-filter: blur(10px) saturate(180%);
+  background: rgba(0, 0, 0, 0.8);
+}
+
+/* Elastic scroll (iOS style) */
+.elastic-scroll {
+  overscroll-behavior: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Optimized for PWA */
+.pwa-safe {
+  position: fixed;
+  top: env(safe-area-inset-top, 0);
+  right: env(safe-area-inset-right, 0);
+  bottom: env(safe-area-inset-bottom, 0);
+  left: env(safe-area-inset-left, 0);
+}
+
+/* Modern grid layouts */
+.auto-fit-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.auto-fill-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+} 

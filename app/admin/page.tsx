@@ -4,7 +4,7 @@ import { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Home, Folder, MessageCircle, LogOut } from "lucide-react";
+import { Home, Folder, MessageCircle, LogOut, Inbox } from "lucide-react";
 import CloudinaryUploadButton from "@/components/CloudinaryUploadButton";
 
 // Static credentials (consider migrating to environment variables for production)
@@ -38,9 +38,13 @@ const AdminPage = () => {
     image: "",
   });
 
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'portfolio' | 'testimonials'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'portfolio' | 'testimonials' | 'enquiries'>('dashboard');
   const [editPortfolioId, setEditPortfolioId] = useState<number | null>(null);
   const [editTestimonialId, setEditTestimonialId] = useState<number | null>(null);
+  const [selectedEnquiry, setSelectedEnquiry] = useState<any>(null);
+  const [showEnquiryModal, setShowEnquiryModal] = useState(false);
+  // Add state for enquiries
+  const [enquiries, setEnquiries] = useState<any[]>([]);
 
   // Validation helpers
   const isTestimonialValid =
@@ -74,6 +78,20 @@ const AdminPage = () => {
         .select("id, name, company, text, rating, image")
         .order("id", { ascending: false });
       setTestimonials(testData || []);
+
+      const fetchEnquiries = async () => {
+        const { data, error } = await supabase
+          .from('contact_submissions')
+          .select('*')
+          .order('created_at', { ascending: false });
+        
+        if (error) {
+          console.error('Error fetching enquiries:', error);
+        } else {
+          setEnquiries(data || []);
+        }
+      };
+      await fetchEnquiries();
     };
 
     fetchData();
@@ -289,6 +307,12 @@ const AdminPage = () => {
           >
             <MessageCircle className="w-5 h-5" /> Testimonials
           </button>
+          <button
+            className={`flex items-center gap-3 w-full px-4 py-2 rounded-lg hover:bg-[#0a2449]/70 transition-colors ${activeTab === 'enquiries' ? 'bg-[#0a2449]/70' : ''}`}
+            onClick={() => setActiveTab('enquiries')}
+          >
+            <Inbox className="w-5 h-5" /> Enquiries
+          </button>
         </nav>
         <Button onClick={handleLogout} variant="outline" className="bg-red-500 hover:bg-red-600 text-white flex items-center gap-2">
           <LogOut className="w-4 h-4" /> Logout
@@ -442,7 +466,226 @@ const AdminPage = () => {
             </div>
           </section>
         )}
+
+        {activeTab === 'enquiries' && (
+          <section>
+            <div className="flex items-center gap-2 mb-6">
+              <div className="w-8 h-[2px] bg-[#0a2449]"></div>
+              <Badge className="bg-[#0a2449] text-[#efede7] rounded-full px-4 py-2">
+                Enquiries
+              </Badge>
+            </div>
+            
+            <div className="bg-white rounded-xl shadow overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200">
+                  <thead className="bg-[#0a2449]/5">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-[#0a2449] uppercase tracking-wider">Name</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-[#0a2449] uppercase tracking-wider">Email</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-[#0a2449] uppercase tracking-wider">Event Type</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-[#0a2449] uppercase tracking-wider">Date</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-[#0a2449] uppercase tracking-wider">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {enquiries.map((enquiry) => (
+                      <tr key={enquiry.id}>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm font-medium text-[#0a2449]">{enquiry.name}</div>
+                          <div className="text-sm text-[#0a2449]/70">{enquiry.company}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-[#0a2449]">{enquiry.email}</div>
+                          <div className="text-sm text-[#0a2449]/70">{enquiry.phone}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <Badge>{enquiry.event_type}</Badge>
+                          <div className="text-sm text-[#0a2449]/70 mt-1">{enquiry.budget}</div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="text-sm text-[#0a2449]">
+                            {enquiry.event_date ? new Date(enquiry.event_date).toLocaleDateString() : 'Not specified'}
+                          </div>
+                          <div className="text-sm text-[#0a2449]/70">
+                            {enquiry.guest_count ? `${enquiry.guest_count} guests` : ''}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                          <button
+                            onClick={() => {
+                              setSelectedEnquiry(enquiry);  
+                              setShowEnquiryModal(true);
+                            }}
+                            className="text-blue-500 hover:text-blue-700 mr-3"
+                          >
+                            View
+                          </button>
+                          <button
+                            onClick={async () => {
+                              const { error } = await supabase
+                                .from('contact_submissions')
+                                .delete()
+                                .eq('id', enquiry.id);
+                              
+                              if (!error) {
+                                setEnquiries(enquiries.filter(e => e.id !== enquiry.id));
+                              }
+                            }}
+                            className="text-red-500 hover:text-red-700"
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        )}
       </main>
+
+      {/* Enquiry Details Modal */}
+      {showEnquiryModal && selectedEnquiry && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+            <div className="p-6">
+              <div className="flex items-center justify-between mb-6">
+                <h2 className="text-2xl font-bold text-[#0a2449]">Enquiry Details</h2>
+                <button
+                  onClick={() => {
+                    setShowEnquiryModal(false);
+                    setSelectedEnquiry(null);
+                  }}
+                  className="text-gray-500 hover:text-gray-700 text-2xl font-bold"
+                >
+                  ×
+                </button>
+              </div>
+
+              <div className="space-y-6">
+                {/* Personal Information */}
+                <div>
+                  <h3 className="text-lg font-semibold text-[#0a2449] mb-3 border-b border-gray-200 pb-2">
+                    Personal Information
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Full Name</label>
+                      <p className="text-[#0a2449] font-medium">{selectedEnquiry.name}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Email</label>
+                      <p className="text-[#0a2449] font-medium">{selectedEnquiry.email}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Phone</label>
+                      <p className="text-[#0a2449] font-medium">{selectedEnquiry.phone || 'Not provided'}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Company</label>
+                      <p className="text-[#0a2449] font-medium">{selectedEnquiry.company || 'Not provided'}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Event Details */}
+                <div>
+                  <h3 className="text-lg font-semibold text-[#0a2449] mb-3 border-b border-gray-200 pb-2">
+                    Event Details
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Event Type</label>
+                      <Badge className="mt-1">{selectedEnquiry.event_type}</Badge>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Budget</label>
+                      <p className="text-[#0a2449] font-medium">{selectedEnquiry.budget || 'Not specified'}</p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Event Date</label>
+                      <p className="text-[#0a2449] font-medium">
+                        {selectedEnquiry.event_date ? new Date(selectedEnquiry.event_date).toLocaleDateString() : 'Not specified'}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Guest Count</label>
+                      <p className="text-[#0a2449] font-medium">
+                        {selectedEnquiry.guest_count ? `${selectedEnquiry.guest_count} guests` : 'Not specified'}
+                      </p>
+                    </div>
+                    <div className="md:col-span-2">
+                      <label className="text-sm font-medium text-gray-600">Location</label>
+                      <p className="text-[#0a2449] font-medium">{selectedEnquiry.location || 'Not specified'}</p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Message */}
+                <div>
+                  <h3 className="text-lg font-semibold text-[#0a2449] mb-3 border-b border-gray-200 pb-2">
+                    Message
+                  </h3>
+                  <div className="bg-gray-50 rounded-lg p-4">
+                    <p className="text-[#0a2449] whitespace-pre-wrap">{selectedEnquiry.message}</p>
+                  </div>
+                </div>
+
+                {/* Submission Info */}
+                <div>
+                  <h3 className="text-lg font-semibold text-[#0a2449] mb-3 border-b border-gray-200 pb-2">
+                    Submission Information
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Submitted On</label>
+                      <p className="text-[#0a2449] font-medium">
+                        {new Date(selectedEnquiry.created_at).toLocaleString()}
+                      </p>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-gray-600">Enquiry ID</label>
+                      <p className="text-[#0a2449] font-medium">#{selectedEnquiry.id}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 mt-8 pt-6 border-t border-gray-200">
+                <Button
+                  onClick={() => {
+                    setShowEnquiryModal(false);
+                    setSelectedEnquiry(null);
+                  }}
+                  variant="outline"
+                >
+                  Close
+                </Button>
+                <Button
+                  onClick={async () => {
+                    const { error } = await supabase
+                      .from('contact_submissions')
+                      .delete()
+                      .eq('id', selectedEnquiry.id);
+                    
+                    if (!error) {
+                      setEnquiries(enquiries.filter(e => e.id !== selectedEnquiry.id));
+                      setShowEnquiryModal(false);
+                      setSelectedEnquiry(null);
+                    }
+                  }}
+                  className="bg-red-500 hover:bg-red-600 text-white"
+                >
+                  Delete Enquiry
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -29,11 +29,13 @@ import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
 import Lottie from "lottie-react";
 import ServicesCarousel from "./components/ServicesCarousel"; // Import the ServicesCarousel component
+import EnhancedMobileServices from "./components/EnhancedMobileServices";
 import { portfolioItems as portfolioItemsStatic } from "@/data/portfolio";
 import { supabase } from "@/lib/supabaseClient";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import Preloader from "./components/Preloader";
+import AboutSection from "./components/About";
 import {
   CldUploadWidget,
   CloudinaryUploadWidgetResults, // ← correct name
@@ -232,187 +234,43 @@ export default function IdeatorEventsWebsite() {
       <Header />
 
       {/* Hero Section */}
-      <section className="relative min-h-[90vh] flex items-center justify-center overflow-hidden pt-16">
-        <div className="absolute inset-0 bg-gradient-to-b from-[#0a2449]/40 to-[#0a2449]/60 z-10"></div>
+      <section className="relative h-[90vh] flex items-center justify-center overflow-hidden pt-16">
+        {/* Video is the main focus, covers the entire section */}
         <video
           autoPlay
           muted
           loop
           playsInline
-          width="1280"
-          height="720"
+          width="1920"
+          height="1080"
           poster="/fallback.avif"
-          className="absolute inset-0 w-full h-full object-cover scale-105 animate-slow-zoom"
+          className="absolute inset-0 w-full h-full object-cover z-0"
+          style={{ objectPosition: "center" }}
         >
-          <source src="/banner_compressed.mp4" type="video/mp4" />
-          <source src="/banner_compressed.webm" type="video/webm" />
+          <source src="/banner.mp4" type="video/mp4" />
+          <source src="/banner.webm" type="video/webm" />
         </video>
-
-        <div className="relative z-20 text-center max-w-5xl mx-auto px-6">
-          <h1 className="text-3xl md:text-6xl font-light mb-8 leading-tight text-[#efede7]">
-            <span className="block mt-2 bg-clip-text text-transparent bg-gradient-to-r from-[#efede7] to-[#efede7]/70">
-              Designing Remarkable Events Across the Globe
-            </span>
-          </h1>
-          <div className="flex flex-col sm:flex-row gap-6 justify-center">
-            <Link href="/portfolio">
-              <Button
-                size="lg"
-                className="bg-[#efede7] text-[#0a2449] hover:bg-[#efede7]/90 px-8 py-6 text-lg font-medium transition-all duration-300 rounded-full group"
-              >
-                Explore Our Work
-                <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
-              </Button>
-            </Link>
-          </div>
-        </div>
-
-        <div className="absolute bottom-12 left-1/2 transform -translate-x-1/2 z-20">
-          <div className="w-6 h-10 border-2 border-[#efede7]/60 rounded-full flex justify-center">
-            <div className="w-1.5 h-2.5 bg-[#efede7]/60 rounded-full mt-2 animate-bounce"></div>
-          </div>
+        {/* Optional: subtle overlay for readability */}
+        {/* Minimal content overlay, if any */}
+        <div className="relative z-20 flex flex-col items-center justify-center w-full h-full">
+          {/* Optionally, you can add a play icon or a short caption here */}
         </div>
       </section>
 
       {/* About Section Gradients */}
-
+      <AboutSection />
       {/* Who We Are - Simple & Clean */}
-      <section
-        id="about"
-        className="py-20 bg-[#efede7] relative overflow-hidden"
-      >
-        <div className="container mx-auto px-4 md:px-0">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
-            {/* Left Content */}
-            <div className="px-4 md:px-0">
-              <div className="inline-flex items-center gap-2 mb-6">
-                <div className="w-12 h-[2px] bg-[#0a2449]"></div>
-                <Badge className="bg-[#0a2449] text-[#efede7] rounded-full px-4 py-2">
-                  About Us
-                </Badge>
-              </div>
 
-              <h2 className="text-4xl md:text-6xl font-bold text-[#0a2449] mb-6">
-                Who We Are
-              </h2>
-              <p className="text-xl text-[#0a2449]/60 mb-8">
-                Our Story of Excellence
-              </p>
-
-              <div className="space-y-6 text-lg text-[#0a2449]/70 leading-relaxed text-justify">
-                <p>
-                  Ideator Events emerged from an audacious vision:
-                  revolutionizing the corporate events landscape across Asia and
-                  the Middle East. Originating in Kochi, we have evolved over 18
-                  transformative years into a global powerhouse with strategic
-                  offices and production facilities in India, Dubai, Bangkok,
-                  and Indonesia.
-                </p>
-
-                <p>
-                  Our philosophy at Ideator is simple yet profound: every event
-                  is a narrative waiting to unfold. Whether orchestrating
-                  intimate executive retreats, grand international conferences,
-                  or spectacular concerts, we meticulously craft experiences
-                  that blend creativity, precision, and unbridled passion.
-                </p>
-
-                <p>
-                  Under the strategic leadership of our Managing Director, Mr.
-                  Mathews Joseph — a distinguished hotelier — we seamlessly
-                  integrate hospitality, entertainment, and flawless execution
-                  into every project we undertake.
-                </p>
-
-                <p>
-                  We are more than an events company; we are a dynamic creative
-                  ecosystem comprising three interconnected enterprises:
-                </p>
-
-                <ul className="list-disc pl-6">
-                  <li>
-                    Festival Cinema: A pioneering force in Indian film
-                    production
-                  </li>
-                  <li>
-                    Forwardslash Digital: Innovators in digital and social media
-                    marketing strategies
-                  </li>
-                </ul>
-
-                <p>
-                  Our collective mission transcends individual boundaries: to
-                  inspire, connect, and create extraordinary experiences that
-                  resonate across industries and platforms.
-                </p>
-
-                <p>
-                  With comprehensive in-house design studios and production
-                  units, we guarantee meticulous execution without external
-                  dependencies. Our pristine zero-complaint record stands as a
-                  testament to our unwavering commitment to quality and client
-                  satisfaction.
-                </p>
-
-                <p>
-                  At Ideator Events, we understand that a truly exceptional
-                  event is defined by the guest experience. Leveraging over 18
-                  years of expertise and a passionate, dedicated team, we
-                  transform abstract ideas into unforgettable moments — allowing
-                  you to immerse yourself fully in the celebration.
-                </p>
-              </div>
-            </div>
-
-            {/* Right Content - Animation */}
-            <div className="flex flex-col gap-12 px-4 md:px-0">
-              <div>
-                <video
-                  autoPlay
-                  muted
-                  loop
-                  playsInline
-                  width="1280"
-                  height="720"
-                  poster="/logo.png"
-                  className="w-full max-w-[500px] mx-auto rounded-3xl shadow-2xl"
-                >
-                  <source src="/about.mp4" type="video/mp4" />
-                </video>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
-                <div className="bg-[#0a2449]/5 rounded-2xl p-4 sm:p-5 md:p-6 text-center transition-all hover:bg-[#0a2449]/10">
-                  <div className="text-3xl sm:text-4xl font-bold text-[#0a2449] mb-1 sm:mb-2">
-                    4
-                  </div>
-                  <div className="text-xs sm:text-sm font-medium text-[#0a2449]/70">
-                    Global Offices
-                  </div>
-                </div>
-                <div className="bg-[#0a2449]/5 rounded-2xl p-4 sm:p-5 md:p-6 text-center transition-all hover:bg-[#0a2449]/10">
-                  <div className="text-3xl sm:text-4xl font-bold text-[#0a2449] mb-1 sm:mb-2">
-                    15+
-                  </div>
-                  <div className="text-xs sm:text-sm font-medium text-[#0a2449]/70">
-                    Years of Excellence
-                  </div>
-                </div>
-                <div className="bg-[#0a2449]/5 rounded-2xl p-4 sm:p-5 md:p-6 text-center transition-all hover:bg-[#0a2449]/10">
-                  <div className="text-3xl sm:text-4xl font-bold text-[#0a2449] mb-1 sm:mb-2">
-                    500+
-                  </div>
-                  <div className="text-xs sm:text-sm font-medium text-[#0a2449]/70">
-                    Events Delivered
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+      {/* Services Section */}
+      <div id="services">
+        {/* Desktop Carousel */}
+        <div className="hidden lg:block">
+          <ServicesCarousel />
         </div>
-      </section>
 
-      <ServicesCarousel />
+        {/* Mobile */}
+        <EnhancedMobileServices />
+      </div>
 
       {/* Portfolio */}
       <section id="portfolio" className="py-20 bg-[#efede7]">
