@@ -1,4 +1,40 @@
 {
+  "app/page.tsx -> ./components/About": {
+    "id": "app/page.tsx -> ./components/About",
+    "files": [
+      "static/chunks/_app-pages-browser_app_components_About_tsx.js"
+    ]
+  },
+  "app/page.tsx -> ./components/EnhancedMobileServices": {
+    "id": "app/page.tsx -> ./components/EnhancedMobileServices",
+    "files": [
+      "static/chunks/_app-pages-browser_app_components_EnhancedMobileServices_tsx.js"
+    ]
+  },
+  "app/page.tsx -> ./components/Footer": {
+    "id": "app/page.tsx -> ./components/Footer",
+    "files": [
+      "static/chunks/_app-pages-browser_app_components_Footer_tsx.js"
+    ]
+  },
+  "app/page.tsx -> ./components/Header": {
+    "id": "app/page.tsx -> ./components/Header",
+    "files": [
+      "static/chunks/_app-pages-browser_app_components_Header_tsx.js"
+    ]
+  },
+  "app/page.tsx -> ./components/Preloader": {
+    "id": "app/page.tsx -> ./components/Preloader",
+    "files": [
+      "static/chunks/_app-pages-browser_app_components_Preloader_tsx.js"
+    ]
+  },
+  "app/page.tsx -> ./components/ServicesCarousel": {
+    "id": "app/page.tsx -> ./components/ServicesCarousel",
+    "files": [
+      "static/chunks/_app-pages-browser_app_components_ServicesCarousel_tsx.js"
+    ]
+  },
   "app/page.tsx -> aos": {
     "id": "app/page.tsx -> aos",
     "files": [

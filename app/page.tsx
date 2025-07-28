@@ -1,5 +1,7 @@
 "use client";
 
+import { useState, useRef, useEffect, Suspense, lazy } from "react";
+import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -26,20 +28,26 @@ import {
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useState, useRef, useEffect } from "react";
-import Lottie from "lottie-react";
-import ServicesCarousel from "./components/ServicesCarousel"; // Import the ServicesCarousel component
-import EnhancedMobileServices from "./components/EnhancedMobileServices";
 import { portfolioItems as portfolioItemsStatic } from "@/data/portfolio";
 import { supabase } from "@/lib/supabaseClient";
-import Header from "./components/Header";
-import Footer from "./components/Footer";
-import Preloader from "./components/Preloader";
-import AboutSection from "./components/About";
 import {
   CldUploadWidget,
   CloudinaryUploadWidgetResults, // ← correct name
 } from "next-cloudinary";
+
+// Lazy load components
+const Header = dynamic(() => import("./components/Header"), { ssr: false, loading: () => <div /> });
+const Footer = dynamic(() => import("./components/Footer"), { ssr: false, loading: () => <div /> });
+const Preloader = dynamic(() => import("./components/Preloader"), { ssr: false, loading: () => <div /> });
+const AboutSection = dynamic(() => import("./components/About"), { ssr: false, loading: () => <div /> });
+const ServicesCarousel = dynamic(() => import("./components/ServicesCarousel"), { ssr: false, loading: () => <div style={{height: 300}} /> });
+const EnhancedMobileServices = dynamic(() => import("./components/EnhancedMobileServices"), { ssr: false, loading: () => <div /> });
+
+let Lottie: any;
+if (typeof window !== "undefined") {
+  // Only import lottie-react on client
+  Lottie = require("lottie-react");
+}
 
 export default function IdeatorEventsWebsite() {
   // Navigation menu state is now handled inside Header component
@@ -229,9 +237,13 @@ export default function IdeatorEventsWebsite() {
 
   return (
     <div className="min-h-screen bg-[#efede7]">
-      {pageLoading && <Preloader />}
+      <Suspense fallback={null}>
+        {pageLoading && <Preloader />}
+      </Suspense>
       {/* Header */}
-      <Header />
+      <Suspense fallback={null}>
+        <Header />
+      </Suspense>
 
       {/* Hero Section */}
       <section className="relative h-[90vh] flex items-center justify-center overflow-hidden pt-16">
@@ -258,18 +270,24 @@ export default function IdeatorEventsWebsite() {
       </section>
 
       {/* About Section Gradients */}
-      <AboutSection />
+      <Suspense fallback={null}>
+        <AboutSection />
+      </Suspense>
       {/* Who We Are - Simple & Clean */}
 
       {/* Services Section */}
       <div id="services">
         {/* Desktop Carousel */}
         <div className="hidden lg:block">
-          <ServicesCarousel />
+          <Suspense fallback={<div style={{height: 300}} />}>
+            <ServicesCarousel />
+          </Suspense>
         </div>
 
         {/* Mobile */}
-        <EnhancedMobileServices />
+        <Suspense fallback={null}>
+          <EnhancedMobileServices />
+        </Suspense>
       </div>
 
       {/* Portfolio */}
@@ -302,6 +320,7 @@ export default function IdeatorEventsWebsite() {
                     width={400}
                     height={300}
                     className="w-full h-[400px] object-cover group-hover:scale-110 transition-transform duration-700"
+                    loading="lazy"
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0a2449]/80 via-[#0a2449]/40 to-transparent">
                     <div className="absolute bottom-8 left-8 text-[#efede7]">
@@ -348,6 +367,7 @@ export default function IdeatorEventsWebsite() {
                   allow="autoplay; encrypted-media"
                   allowFullScreen
                   className="w-full h-full rounded-xl shadow-2xl"
+                  loading="lazy"
                 />
                 <button
                   className="absolute -top-10 right-0 text-white text-3xl font-bold hover:text-gray-300 focus:outline-none"
@@ -435,6 +455,7 @@ export default function IdeatorEventsWebsite() {
                           width={48}
                           height={48}
                           className="w-full h-full object-cover"
+                          loading="lazy"
                         />
                       ) : (
                         <Users className="w-5 h-5 sm:w-6 sm:h-6 text-[#0a2449]/40" />
@@ -519,7 +540,9 @@ export default function IdeatorEventsWebsite() {
       </section>
 
       {/* Footer */}
-      <Footer />
+      <Suspense fallback={null}>
+        <Footer />
+      </Suspense>
     </div>
   );
 }
