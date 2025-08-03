@@ -63,6 +63,10 @@ export default function IdeatorEventsWebsite() {
   const [testimonials, setTestimonials] = useState<any[]>([]);
   // Preloader state to wait for all video elements to be ready
   const [pageLoading, setPageLoading] = useState(true);
+  
+  // Add state for window width to prevent hydration mismatch
+  const [isMobile, setIsMobile] = useState(false);
+  const [isClient, setIsClient] = useState(false);
 
   // Initialize AOS once on mount (dynamic import to avoid type issues)
   useEffect(() => {
@@ -74,6 +78,19 @@ export default function IdeatorEventsWebsite() {
         easing: "ease-out-quart",
       });
     });
+  }, []);
+
+  // Handle window width changes to prevent hydration mismatch
+  useEffect(() => {
+    setIsClient(true);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 640);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   // Load Lottie animation
@@ -246,27 +263,125 @@ export default function IdeatorEventsWebsite() {
       </Suspense>
 
       {/* Hero Section */}
-      <section className="relative h-[90vh] flex items-center justify-center overflow-hidden pt-16">
-        {/* Video is the main focus, covers the entire section */}
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          width="1920"
-          height="1080"
-          poster="/banner_compressed.mp4"
-          className="absolute inset-0 w-full h-full object-cover z-0"
-          style={{ objectPosition: "center" }}
-        >
-          <source src="/banner_compressed.mp4" type="video/mp4" />
-          <source src="/banner.webm" type="video/webm" />
-        </video>
-        {/* Optional: subtle overlay for readability */}
-        {/* Minimal content overlay, if any */}
-        <div className="relative z-20 flex flex-col items-center justify-center w-full h-full">
-          {/* Optionally, you can add a play icon or a short caption here */}
+      <section className="relative h-[90vh] flex items-center justify-center overflow-hidden pt-16 bg-[#0a2449] mt-10">
+        {/* Video background with enhanced overlay and animated headline */}
+        <div className="absolute inset-0 w-full h-full z-0">
+          <video
+            autoPlay
+            muted
+            loop
+            playsInline
+            width="1920"
+            height="1080"
+            poster="/banner_compressed.mp4"
+            className="w-full h-full object-cover"
+            style={{ objectPosition: "center", filter: "blur(1px) brightness(1.15) saturate(0.7)" }}
+          >
+            <source src="/banner_compressed.mp4" type="video/mp4" />
+            <source src="/banner.webm" type="video/webm" />
+          </video>
+          <div
+            className="absolute inset-0 pointer-events-none"
+            style={{
+              backdropFilter: "blur(8px)",
+              WebkitBackdropFilter: "blur(8px)",
+            }}
+          />
         </div>
+        {/* Gradient overlay for improved readability */}
+        <div className="absolute inset-0 z-10 bg-gradient-to-b from-[#0a2449]/60 via-[#0a2449]/30 to-transparent pointer-events-none"></div>
+        {/* Content overlay with animated headline and CTA */}
+        <div className="relative z-20 flex flex-col items-start md:items-center justify-center w-full h-full px-4">
+          <h1
+            className={`
+              text-3xl
+              sm:text-4xl
+              md:text-6xl
+              font-extrabold
+              text-[#efede7]
+              text-left
+              md:text-center
+              mb-6
+              drop-shadow-lg
+              animate-fade-in-up
+              ${isClient && isMobile ? "tracking-tight font-sans" : ""}
+            `}
+            style={{
+              fontFamily:
+                isClient && isMobile
+                  ? "'Inter', 'Arial', sans-serif"
+                  : undefined,
+              letterSpacing:
+                isClient && isMobile
+                  ? "-0.01em"
+                  : undefined,
+            }}
+          >
+            Elevate Your{" "}
+            <span className="text-[#FFFFFFFF] px-2 rounded">Events</span>
+            <br />
+            Inspire{" "}
+            <span className="text-[#FFFFFFFF] px-2 rounded">Audiences</span>
+          </h1>
+          <p
+            className={`
+              text-base
+              sm:text-lg
+              md:text-2xl
+              text-[#efede7]/80
+              text-left
+              md:text-center
+              mb-8
+              max-w-2xl
+              animate-fade-in-up
+              delay-150
+              ${isClient && isMobile ? "font-sans" : ""}
+            `}
+            style={{
+              fontFamily:
+                isClient && isMobile
+                  ? "'Inter', 'Arial', sans-serif"
+                  : undefined,
+            }}
+          >
+            Unforgettable experiences, crafted with passion and precision—across India, UAE, Thailand, and Indonesia.
+          </p>
+          <Button
+            size={isClient && isMobile ? "sm" : "lg"}
+            className={`
+              bg-[#0a2449] text-[#efede7] hover:bg-[#0a2449]/90
+              ${isClient && isMobile
+                ? "px-5 py-3 text-base"
+                : "px-8 py-5 text-lg"}
+              rounded-full font-semibold shadow-lg animate-fade-in-up delay-300
+            `}
+          >
+            Know More
+            <ArrowRight className="ml-2 w-5 h-5" />
+          </Button>
+        </div>
+        {/* Animations */}
+        <style jsx>{`
+          @keyframes fade-in-up {
+            0% {
+              opacity: 0;
+              transform: translateY(40px);
+            }
+            100% {
+              opacity: 1;
+              transform: translateY(0);
+            }
+          }
+          .animate-fade-in-up {
+            animation: fade-in-up 1s cubic-bezier(0.23, 1, 0.32, 1) both;
+          }
+          .delay-150 {
+            animation-delay: 0.15s;
+          }
+          .delay-300 {
+            animation-delay: 0.3s;
+          }
+        `}</style>
       </section>
 
       {/* About Section Gradients */}
@@ -538,6 +653,7 @@ export default function IdeatorEventsWebsite() {
           </div>
         </div>
       </section>
+
 
       {/* Footer */}
       <Suspense fallback={null}>
