@@ -1,12 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { SERVICES } from "@/data/services";
 import { Badge } from "@/components/ui/badge";
 import { ChevronDown, ChevronUp } from "lucide-react";
+import VideoOptimizer from "./VideoOptimizer";
+import { usePerformanceMonitor, useNetworkMonitor } from "@/hooks/usePerformanceMonitor";
 
 const MobileServicesSection = () => {
   const [expandedServices, setExpandedServices] = useState<number[]>([]);
+  const { getMetrics, logMetrics } = usePerformanceMonitor();
+  useNetworkMonitor();
 
   const toggleService = (serviceId: number) => {
     setExpandedServices(prev => 
@@ -15,6 +19,13 @@ const MobileServicesSection = () => {
         : [...prev, serviceId]
     );
   };
+
+  // Log performance metrics when component unmounts
+  useEffect(() => {
+    return () => {
+      logMetrics();
+    };
+  }, [logMetrics]);
 
   return (
     <section 
@@ -43,7 +54,7 @@ const MobileServicesSection = () => {
             return (
               <div 
                 key={service.id}
-                className="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl"
+                className="bg-white rounded-2xl shadow-lg overflow-hidden"
               >
                 {/* Service Header - Always Visible */}
                 <div 
@@ -74,13 +85,13 @@ const MobileServicesSection = () => {
                   <div className="border-t border-[#0a2449]/10">
                     <div className="relative aspect-video w-full overflow-hidden">
                       {isVideo ? (
-                        <video
+                        <VideoOptimizer
                           src={service.image}
-                          autoPlay
-                          muted
-                          loop
-                          playsInline
-                          className="w-full h-full object-cover"
+                          alt={service.title}
+                          autoPlay={true}
+                          muted={true}
+                          loop={true}
+                          playsInline={true}
                         />
                       ) : (
                         <img
@@ -90,7 +101,7 @@ const MobileServicesSection = () => {
                           loading="lazy"
                         />
                       )}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent pointer-events-none" />
                     </div>
                   </div>
                 )}

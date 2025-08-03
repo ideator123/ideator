@@ -7,7 +7,10 @@
     "build:css": "tailwindcss -i ./src/styles/globals.css -o ./public/styles/globals.css --minify",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "compress-videos": "node scripts/compress-videos.js",
+    "optimize": "npm run compress-videos && npm run build",
+    "analyze": "ANALYZE=true npm run build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
