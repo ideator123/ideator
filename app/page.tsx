@@ -297,6 +297,8 @@ export default function IdeatorEventsWebsite() {
           >
             Unforgettable experiences, crafted with passion and precision—across India, UAE, Thailand, and Indonesia.
           </p>
+          <a href="#about">
+
           <Button
             size={isClient && isMobile ? "sm" : "lg"}
             className={`
@@ -308,6 +310,7 @@ export default function IdeatorEventsWebsite() {
             Know More
             <ArrowRight className="ml-2 w-5 h-5" />
           </Button>
+          </a>
         </div>
         
         <style jsx>{`
@@ -333,9 +336,11 @@ export default function IdeatorEventsWebsite() {
         `}</style>
       </section>
 
-      <Suspense fallback={<div className="h-96 bg-[#efede7] animate-pulse" />}>
-        <AboutSection />
-      </Suspense>
+      <div id="about">
+        <Suspense fallback={<div className="h-96 bg-[#efede7] animate-pulse" />}>
+          <AboutSection />
+        </Suspense>
+      </div>
 
       {/* Services Section */}
       <div id="services">
@@ -458,6 +463,10 @@ export default function IdeatorEventsWebsite() {
             </p>
           </div>
           <div className="relative overflow-hidden py-4 md:py-8">
+            {/* Fade overlays for left/right edges */}
+            {/* Cross-fade overlays for left/right edges */}
+            <div className="pointer-events-none absolute top-0 left-0 h-full w-16 z-20 bg-gradient-to-r from-[#efede7] via-[#efede7]/80 to-transparent transition-opacity duration-700 ease-in-out opacity-100 group-hover:opacity-0" />
+            <div className="pointer-events-none absolute top-0 right-0 h-full w-16 z-20 bg-gradient-to-l from-[#efede7] via-[#efede7]/80 to-transparent transition-opacity duration-700 ease-in-out opacity-100 group-hover:opacity-0" />
             <div className="absolute top-2 md:top-4 left-1/2 -translate-x-1/2 bg-white/80 text-[#0a2449] text-xs md:text-sm px-4 md:px-6 py-1.5 md:py-2 rounded-full opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100 backdrop-blur-sm shadow-[0_2px_8px_rgba(10,36,73,0.04)]">
               Hover to pause
             </div>

@@ -16,7 +16,7 @@ const nextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
   },
   experimental: {
-    optimizeCss: true,
+    // optimizeCss: true, // Temporarily disabled to resolve cacheUnaffected conflict
     optimizePackageImports: ['lucide-react', '@radix-ui/react-icons'],
     turbo: {
       rules: {
@@ -118,9 +118,9 @@ const nextConfig = {
       };
     }
 
-    // Tree shaking optimization
-    config.optimization.usedExports = true;
-    config.optimization.sideEffects = false;
+    // Removed conflicting optimization settings for Next.js 15 compatibility
+    // config.optimization.usedExports = true; // Conflicts with cacheUnaffected
+    // config.optimization.sideEffects = false; // Conflicts with cacheUnaffected
 
     return config;
   },
