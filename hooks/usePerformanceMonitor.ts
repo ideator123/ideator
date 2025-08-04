@@ -1,17 +1,10 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 interface PerformanceMetrics {
   loadTime: number;
   videoLoadTime: number;
   errorCount: number;
   slowLoads: number;
-}
-
-// Extend Window interface to include gtag
-declare global {
-  interface Window {
-    gtag?: (command: string, targetId: string, config?: any) => void;
-  }
 }
 
 export const usePerformanceMonitor = () => {
@@ -23,8 +16,15 @@ export const usePerformanceMonitor = () => {
   });
 
   const startTime = useRef<number>(0);
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
+    
     // Start timing when component mounts
     startTime.current = performance.now();
 
@@ -74,8 +74,8 @@ export const usePerformanceMonitor = () => {
     console.log('Performance Metrics:', metrics);
     
     // Send to analytics if needed
-    if (typeof window !== 'undefined' && window.gtag) {
-      window.gtag('event', 'performance_metrics', {
+    if (typeof window !== 'undefined' && (window as any).gtag) {
+      (window as any).gtag('event', 'performance_metrics', { 
         event_category: 'loading',
         event_label: 'mobile_services',
         value: metrics.loadTime,
@@ -96,7 +96,15 @@ export const usePerformanceMonitor = () => {
 
 // Network performance monitoring
 export const useNetworkMonitor = () => {
+  const [isClient, setIsClient] = useState(false);
+
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    if (!isClient) return;
+    
     if (typeof window !== 'undefined' && 'connection' in navigator) {
       const connection = (navigator as any).connection;
       

@@ -1,86 +1,122 @@
 "use client";
 
-import { useState, useRef, useEffect, Suspense, lazy } from "react";
+import { useState, useEffect, Suspense, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  Calendar,
-  Globe,
-  Users,
-  Sparkles,
-  Award,
-  Rocket,
   MapPin,
   Star,
-  Mail,
-  Phone,
-  Linkedin,
-  Instagram,
-  Youtube,
-  Menu,
-  X,
   ArrowRight,
-  ChevronDown,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { portfolioItems as portfolioItemsStatic } from "@/data/portfolio";
 import { supabase } from "@/lib/supabaseClient";
-import {
-  CldUploadWidget,
-  CloudinaryUploadWidgetResults, // ← correct name
-} from "next-cloudinary";
 
-// Lazy load components
-const Header = dynamic(() => import("./components/Header"), { ssr: false, loading: () => <div /> });
-const Footer = dynamic(() => import("./components/Footer"), { ssr: false, loading: () => <div /> });
-const Preloader = dynamic(() => import("./components/Preloader"), { ssr: false, loading: () => <div /> });
-const AboutSection = dynamic(() => import("./components/About"), { ssr: false, loading: () => <div /> });
-const ServicesCarousel = dynamic(() => import("./components/ServicesCarousel"), { ssr: false, loading: () => <div style={{height: 300}} /> });
-const EnhancedMobileServices = dynamic(() => import("./components/EnhancedMobileServices"), { ssr: false, loading: () => <div /> });
+// Optimized dynamic imports with better loading states
+const Header = dynamic(() => import("./components/Header"), { 
+  ssr: false, 
+  loading: () => <div className="h-16 bg-[#0a2449]/60 backdrop-blur-xl" />
+});
 
-let Lottie: any;
-if (typeof window !== "undefined") {
-  // Only import lottie-react on client
-  Lottie = require("lottie-react");
-}
+const Footer = dynamic(() => import("./components/Footer"), { 
+  ssr: false, 
+  loading: () => <div className="h-64 bg-[#efede7]" />
+});
+
+const Preloader = dynamic(() => import("./components/Preloader"), { 
+  ssr: false, 
+  loading: () => null 
+});
+
+const AboutSection = dynamic(() => import("./components/About"), { 
+  ssr: false, 
+  loading: () => <div className="h-96 bg-[#efede7] animate-pulse" />
+});
+
+const ServicesCarousel = dynamic(() => import("./components/ServicesCarousel"), { 
+  ssr: false, 
+  loading: () => <div className="h-96 bg-[#efede7] animate-pulse" />
+});
+
+const EnhancedMobileServices = dynamic(() => import("./components/EnhancedMobileServices"), { 
+  ssr: false, 
+  loading: () => <div className="h-96 bg-[#efede7] animate-pulse" />
+});
+
+// Memoized static data
+const companies = [
+  {
+    title: "Infinite Real Estate",
+    image: "/infinite-real-estate.jpg",
+  },
+  {
+    title: "Paramount International LLC",
+    image: "/paramount-international.jpg",
+  },
+  {
+    title: "Infinite International",
+    image: "/infinite-international.jpg",
+  },
+];
+
+const initialTestimonials = [
+  {
+    name: "Sarah Johnson",
+    company: "Tech Innovations Inc.",
+    text: "Ideator Events transformed our annual conference into an unforgettable experience. Their attention to detail and global perspective is unmatched.",
+    rating: 5,
+    image: "/placeholder.svg?height=60&width=60",
+  },
+  {
+    name: "Rajesh Patel",
+    company: "Global Enterprises",
+    text: "From concept to execution, the team delivered beyond our expectations. Our Dubai event was flawless and left a lasting impression on all attendees.",
+    rating: 5,
+    image: "/placeholder.svg?height=60&width=60",
+  },
+  {
+    name: "Maria Santos",
+    company: "Creative Solutions",
+    text: "Working with Ideator Events was a game-changer. They understood our vision and brought it to life with precision and creativity.",
+    rating: 5,
+    image: "/placeholder.svg?height=60&width=60",
+  },
+];
+
+const locations = [
+  {
+    country: "India",
+    cities: ["Kochi", "Mumbai", "Delhi"],
+    flag: "🇮🇳",
+  },
+  {
+    country: "UAE",
+    cities: ["Dubai"],
+    flag: "🇦🇪",
+  },
+  {
+    country: "Thailand",
+    cities: ["Bangkok"],
+    flag: "🇹🇭",
+  },
+  {
+    country: "Indonesia",
+    cities: ["Jakarta"],
+    flag: "🇮🇩",
+  },
+];
 
 export default function IdeatorEventsWebsite() {
-  // Navigation menu state is now handled inside Header component
-  const [animationData, setAnimationData] = useState(null);
-  // Video modal state for portfolio section
   const [videoModalUrl, setVideoModalUrl] = useState<string | null>(null);
-
-  // Dynamic data from Supabase with static fallback
-  const [portfolioItems, setPortfolioItems] =
-    useState<any[]>(portfolioItemsStatic);
-
-  // The testimonials array below will be renamed; we initialise dynamic state first
-  const [testimonials, setTestimonials] = useState<any[]>([]);
-  // Preloader state to wait for all video elements to be ready
+  const [portfolioItems, setPortfolioItems] = useState<any[]>(portfolioItemsStatic);
+  const [testimonials, setTestimonials] = useState<any[]>(initialTestimonials);
   const [pageLoading, setPageLoading] = useState(true);
-  
-  // Add state for window width to prevent hydration mismatch
   const [isMobile, setIsMobile] = useState(false);
   const [isClient, setIsClient] = useState(false);
 
-  // Initialize AOS once on mount (dynamic import to avoid type issues)
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    Promise.all([import("aos"), import("aos/dist/aos.css")]).then(([AOS]) => {
-      AOS.default.init({
-        duration: 800,
-        once: true,
-        easing: "ease-out-quart",
-      });
-    });
-  }, []);
-
-  // Handle window width changes to prevent hydration mismatch
+  // Initialize client-side state
   useEffect(() => {
     setIsClient(true);
     const checkMobile = () => {
@@ -93,26 +129,33 @@ export default function IdeatorEventsWebsite() {
     return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
-  // Load Lottie animation
+  // Initialize AOS with optimized loading
   useEffect(() => {
-    const loadAnimation = async () => {
+    if (typeof window === "undefined") return;
+    
+    const initAOS = async () => {
       try {
-        const response = await fetch("/animation-data.json");
-        const data = await response.json();
-        setAnimationData(data);
+        const [AOS] = await Promise.all([
+          import("aos"),
+          import("aos/dist/aos.css")
+        ]);
+        AOS.default.init({
+          duration: 800,
+          once: true,
+          easing: "ease-out-quart",
+        });
       } catch (error) {
-        console.error("Failed to load animation:", error);
+        console.error("Failed to load AOS:", error);
       }
     };
-    loadAnimation();
+    
+    initAOS();
   }, []);
 
+  // Optimized video loading check
   useEffect(() => {
-    // Wait until all <video> elements on the page can play through
-    const videos = Array.from(
-      document.querySelectorAll("video")
-    ) as HTMLVideoElement[];
-
+    const videos = Array.from(document.querySelectorAll("video")) as HTMLVideoElement[];
+    
     if (videos.length === 0) {
       setPageLoading(false);
       return;
@@ -128,15 +171,14 @@ export default function IdeatorEventsWebsite() {
 
     videos.forEach((video) => {
       if (video.readyState >= 3) {
-        // Already loaded enough data
         handleLoaded();
       } else {
         video.addEventListener("canplaythrough", handleLoaded, { once: true });
       }
     });
 
-    // Safety fallback: hide loader after 7 s in case of network issues
-    const timeout = setTimeout(() => setPageLoading(false), 7000);
+    // Reduced timeout for faster loading
+    const timeout = setTimeout(() => setPageLoading(false), 5000);
 
     return () => {
       videos.forEach((video) =>
@@ -146,125 +188,58 @@ export default function IdeatorEventsWebsite() {
     };
   }, []);
 
-  const companies = [
-    {
-      title: "Infinite Real Estate",
-      image: "/infinite-real-estate.jpg",
-    },
-    {
-      title: "Paramount International LLC",
-      image: "/paramount-international.jpg",
-    },
-    {
-      title: "Infinite International",
-      image: "/infinite-international.jpg",
-    },
-  ];
-
-  const initialTestimonials = [
-    {
-      name: "Sarah Johnson",
-      company: "Tech Innovations Inc.",
-      text: "Ideator Events transformed our annual conference into an unforgettable experience. Their attention to detail and global perspective is unmatched.",
-      rating: 5,
-      image: "/placeholder.svg?height=60&width=60", // Add image for each testimonial
-    },
-    {
-      name: "Rajesh Patel",
-      company: "Global Enterprises",
-      text: "From concept to execution, the team delivered beyond our expectations. Our Dubai event was flawless and left a lasting impression on all attendees.",
-      rating: 5,
-      image: "/placeholder.svg?height=60&width=60", // Add image for each testimonial
-    },
-    {
-      name: "Maria Santos",
-      company: "Creative Solutions",
-      text: "Working with Ideator Events was a game-changer. They understood our vision and brought it to life with precision and creativity.",
-      rating: 5,
-      image: "/placeholder.svg?height=60&width=60", // Add image for each testimonial
-    },
-  ];
-
-  // set fallback testimonials only once (on first render)
-  useEffect(() => {
-    setTestimonials(initialTestimonials);
-  }, []);
-
-  // Fetch dynamic content from Supabase on mount
+  // Optimized data fetching with error handling
   useEffect(() => {
     const fetchContent = async () => {
-      // Portfolio data
-      const { data: portfolioData, error: portfolioError } = await supabase
-        .from("portfolio")
-        .select("id, title, location, image, videourl, category")
-        .order("id", { ascending: false });
+      try {
+        const [portfolioResult, testimonialsResult] = await Promise.allSettled([
+          supabase
+            .from("portfolio")
+            .select("id, title, location, image, videourl, category")
+            .order("id", { ascending: false }),
+          supabase
+            .from("testimonials")
+            .select("id, name, company, text, rating, image")
+            .order("id", { ascending: false })
+        ]);
 
-      if (portfolioError) {
-        console.error(
-          "Failed to fetch portfolio items:",
-          portfolioError.message
-        );
-      } else if (portfolioData) {
-        setPortfolioItems(portfolioData);
-      }
+        if (portfolioResult.status === "fulfilled" && portfolioResult.value.data) {
+          setPortfolioItems(portfolioResult.value.data);
+        }
 
-      // Testimonials data
-      const { data: testimonialData, error: testimonialError } = await supabase
-        .from("testimonials")
-        .select("id, name, company, text, rating, image")
-        .order("id", { ascending: false });
-
-      if (testimonialError) {
-        console.error(
-          "Failed to fetch testimonials:",
-          testimonialError.message
-        );
-      } else if (testimonialData) {
-        setTestimonials(testimonialData);
+        if (testimonialsResult.status === "fulfilled" && testimonialsResult.value.data) {
+          setTestimonials(testimonialsResult.value.data);
+        }
+      } catch (error) {
+        console.error("Failed to fetch content:", error);
       }
     };
 
     fetchContent();
   }, []);
 
-  const locations = [
-    {
-      country: "India",
-      cities: ["Kochi", "Mumbai", "Delhi"],
-      flag: "🇮🇳",
-    },
-    {
-      country: "UAE",
-      cities: ["Dubai"],
-      flag: "🇦🇪",
-    },
-    {
-      country: "Thailand",
-      cities: ["Bangkok"],
-      flag: "🇹🇭",
-    },
-    {
-      country: "Indonesia",
-      cities: ["Jakarta"],
-      flag: "🇮🇩",
-    },
-  ];
+  // Memoized portfolio items for better performance
+  const displayedPortfolioItems = useMemo(() => 
+    portfolioItems.slice(0, 3), [portfolioItems]
+  );
 
-  // portfolioItems imported from centralized data file
+  // Memoized testimonials for marquee
+  const marqueeTestimonials = useMemo(() => 
+    testimonials.concat(testimonials), [testimonials]
+  );
 
   return (
     <div className="min-h-screen bg-[#efede7]">
       <Suspense fallback={null}>
         {pageLoading && <Preloader />}
       </Suspense>
-      {/* Header */}
-      <Suspense fallback={null}>
+      
+      <Suspense fallback={<div className="h-16 bg-[#0a2449]/60 backdrop-blur-xl" />}>
         <Header />
       </Suspense>
 
       {/* Hero Section */}
       <section className="relative h-[90vh] flex items-center justify-center overflow-hidden pt-16 bg-[#0a2449] mt-10">
-        {/* Video background with enhanced overlay and animated headline */}
         <div className="absolute inset-0 w-full h-full z-0">
           <video
             autoPlay
@@ -276,6 +251,7 @@ export default function IdeatorEventsWebsite() {
             poster="/banner_compressed.mp4"
             className="w-full h-full object-cover"
             style={{ objectPosition: "center", filter: "blur(1px) brightness(1.15) saturate(0.7)" }}
+            preload="metadata"
           >
             <source src="/banner_compressed.mp4" type="video/mp4" />
             <source src="/banner.webm" type="video/webm" />
@@ -288,33 +264,19 @@ export default function IdeatorEventsWebsite() {
             }}
           />
         </div>
-        {/* Gradient overlay for improved readability */}
+        
         <div className="absolute inset-0 z-10 bg-gradient-to-b from-[#0a2449]/60 via-[#0a2449]/30 to-transparent pointer-events-none"></div>
-        {/* Content overlay with animated headline and CTA */}
+        
         <div className="relative z-20 flex flex-col items-start md:items-center justify-center w-full h-full px-4">
           <h1
             className={`
-              text-3xl
-              sm:text-4xl
-              md:text-6xl
-              font-extrabold
-              text-[#efede7]
-              text-left
-              md:text-center
-              mb-6
-              drop-shadow-lg
-              animate-fade-in-up
+              text-3xl sm:text-4xl md:text-6xl font-extrabold text-[#efede7] 
+              text-left md:text-center mb-6 drop-shadow-lg animate-fade-in-up
               ${isClient && isMobile ? "tracking-tight font-sans" : ""}
             `}
             style={{
-              fontFamily:
-                isClient && isMobile
-                  ? "'Inter', 'Arial', sans-serif"
-                  : undefined,
-              letterSpacing:
-                isClient && isMobile
-                  ? "-0.01em"
-                  : undefined,
+              fontFamily: isClient && isMobile ? "'Inter', 'Arial', sans-serif" : undefined,
+              letterSpacing: isClient && isMobile ? "-0.01em" : undefined,
             }}
           >
             Elevate Your{" "}
@@ -325,23 +287,12 @@ export default function IdeatorEventsWebsite() {
           </h1>
           <p
             className={`
-              text-base
-              sm:text-lg
-              md:text-2xl
-              text-[#efede7]/80
-              text-left
-              md:text-center
-              mb-8
-              max-w-2xl
-              animate-fade-in-up
-              delay-150
+              text-base sm:text-lg md:text-2xl text-[#efede7]/80 
+              text-left md:text-center mb-8 max-w-2xl animate-fade-in-up delay-150
               ${isClient && isMobile ? "font-sans" : ""}
             `}
             style={{
-              fontFamily:
-                isClient && isMobile
-                  ? "'Inter', 'Arial', sans-serif"
-                  : undefined,
+              fontFamily: isClient && isMobile ? "'Inter', 'Arial', sans-serif" : undefined,
             }}
           >
             Unforgettable experiences, crafted with passion and precision—across India, UAE, Thailand, and Indonesia.
@@ -350,9 +301,7 @@ export default function IdeatorEventsWebsite() {
             size={isClient && isMobile ? "sm" : "lg"}
             className={`
               bg-[#0a2449] text-[#efede7] hover:bg-[#0a2449]/90
-              ${isClient && isMobile
-                ? "px-5 py-3 text-base"
-                : "px-8 py-5 text-lg"}
+              ${isClient && isMobile ? "px-5 py-3 text-base" : "px-8 py-5 text-lg"}
               rounded-full font-semibold shadow-lg animate-fade-in-up delay-300
             `}
           >
@@ -360,7 +309,7 @@ export default function IdeatorEventsWebsite() {
             <ArrowRight className="ml-2 w-5 h-5" />
           </Button>
         </div>
-        {/* Animations */}
+        
         <style jsx>{`
           @keyframes fade-in-up {
             0% {
@@ -384,23 +333,19 @@ export default function IdeatorEventsWebsite() {
         `}</style>
       </section>
 
-      {/* About Section Gradients */}
-      <Suspense fallback={null}>
+      <Suspense fallback={<div className="h-96 bg-[#efede7] animate-pulse" />}>
         <AboutSection />
       </Suspense>
-      {/* Who We Are - Simple & Clean */}
 
       {/* Services Section */}
       <div id="services">
-        {/* Desktop Carousel */}
         <div className="hidden lg:block">
-          <Suspense fallback={<div style={{height: 300}} />}>
+          <Suspense fallback={<div className="h-96 bg-[#efede7] animate-pulse" />}>
             <ServicesCarousel />
           </Suspense>
         </div>
 
-        {/* Mobile */}
-        <Suspense fallback={null}>
+        <Suspense fallback={<div className="h-96 bg-[#efede7] animate-pulse" />}>
           <EnhancedMobileServices />
         </Suspense>
       </div>
@@ -416,13 +361,12 @@ export default function IdeatorEventsWebsite() {
               Our Work
             </h2>
             <p className="text-xl text-[#0a2449]/70 max-w-3xl mx-auto">
-              Discover the extraordinary events we've brought to life across the
-              globe.
+              Discover the extraordinary events we've brought to life across the globe.
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {portfolioItems.slice(0, 3).map((item, index) => (
+            {displayedPortfolioItems.map((item, index) => (
               <div
                 key={index}
                 className="group cursor-pointer"
@@ -436,6 +380,8 @@ export default function IdeatorEventsWebsite() {
                     height={300}
                     className="w-full h-[400px] object-cover group-hover:scale-110 transition-transform duration-700"
                     loading="lazy"
+                    placeholder="blur"
+                    blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#0a2449]/80 via-[#0a2449]/40 to-transparent">
                     <div className="absolute bottom-8 left-8 text-[#efede7]">
@@ -453,7 +399,7 @@ export default function IdeatorEventsWebsite() {
               </div>
             ))}
           </div>
-          {/* View All Portfolio button */}
+          
           <div className="text-center mt-16">
             <Link href="/portfolio">
               <Button
@@ -508,12 +454,10 @@ export default function IdeatorEventsWebsite() {
               What Our Clients Say
             </h2>
             <p className="text-xl text-[#0a2449]/70 max-w-3xl mx-auto">
-              Don't just take our word for it — hear from the clients who've
-              experienced our exceptional service.
+              Don't just take our word for it — hear from the clients who've experienced our exceptional service.
             </p>
           </div>
           <div className="relative overflow-hidden py-4 md:py-8">
-            {/* Pause indicator */}
             <div className="absolute top-2 md:top-4 left-1/2 -translate-x-1/2 bg-white/80 text-[#0a2449] text-xs md:text-sm px-4 md:px-6 py-1.5 md:py-2 rounded-full opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100 backdrop-blur-sm shadow-[0_2px_8px_rgba(10,36,73,0.04)]">
               Hover to pause
             </div>
@@ -521,32 +465,24 @@ export default function IdeatorEventsWebsite() {
               className="flex items-stretch animate-marquee-scroll group whitespace-normal hover:[animation-play-state:paused]"
               style={{ animation: "marquee-scroll 15s linear infinite" }}
             >
-              {testimonials.concat(testimonials).map((testimonial, index) => (
+              {marqueeTestimonials.map((testimonial, index) => (
                 <div
                   key={index}
                   className="relative min-w-[280px] sm:min-w-[320px] md:min-w-[360px] lg:min-w-[380px] max-w-xs sm:max-w-sm md:max-w-md bg-white shadow-[0_4px_24px_rgba(10,36,73,0.03)] rounded-[40px] md:rounded-[60px] p-6 sm:p-8 md:p-10 flex flex-col justify-between mx-3 sm:mx-4 md:mx-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_8px_40px_rgba(10,36,73,0.06)]"
                   onMouseEnter={() => {
-                    const parent = document.querySelector(
-                      ".animate-marquee-scroll"
-                    ) as HTMLElement;
+                    const parent = document.querySelector(".animate-marquee-scroll") as HTMLElement;
                     if (parent) parent.style.animationPlayState = "paused";
                   }}
                   onMouseLeave={() => {
-                    const parent = document.querySelector(
-                      ".animate-marquee-scroll"
-                    ) as HTMLElement;
+                    const parent = document.querySelector(".animate-marquee-scroll") as HTMLElement;
                     if (parent) parent.style.animationPlayState = "running";
                   }}
                   onTouchStart={() => {
-                    const parent = document.querySelector(
-                      ".animate-marquee-scroll"
-                    ) as HTMLElement;
+                    const parent = document.querySelector(".animate-marquee-scroll") as HTMLElement;
                     if (parent) parent.style.animationPlayState = "paused";
                   }}
                   onTouchEnd={() => {
-                    const parent = document.querySelector(
-                      ".animate-marquee-scroll"
-                    ) as HTMLElement;
+                    const parent = document.querySelector(".animate-marquee-scroll") as HTMLElement;
                     if (parent) parent.style.animationPlayState = "running";
                   }}
                 >
@@ -573,7 +509,7 @@ export default function IdeatorEventsWebsite() {
                           loading="lazy"
                         />
                       ) : (
-                        <Users className="w-5 h-5 sm:w-6 sm:h-6 text-[#0a2449]/40" />
+                        <div className="w-5 h-5 sm:w-6 sm:h-6 text-[#0a2449]/40">👤</div>
                       )}
                     </div>
                     <div>
@@ -632,8 +568,7 @@ export default function IdeatorEventsWebsite() {
             Eager to Craft Something Unique?
           </h2>
           <p className="text-xl text-[#0a2449]/70 mb-12 max-w-3xl mx-auto">
-            Let's explore how we can transform your ideas into a memorable
-            experience for your audience.
+            Let's explore how we can transform your ideas into a memorable experience for your audience.
           </p>
           <div className="flex flex-col sm:flex-row gap-6 justify-center">
             <Button
@@ -654,9 +589,7 @@ export default function IdeatorEventsWebsite() {
         </div>
       </section>
 
-
-      {/* Footer */}
-      <Suspense fallback={null}>
+      <Suspense fallback={<div className="h-64 bg-[#efede7]" />}>
         <Footer />
       </Suspense>
     </div>

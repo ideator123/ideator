@@ -119,7 +119,9 @@ const VideoOptimizer: React.FC<VideoOptimizerProps> = ({
           muted={isMuted}
           loop={loop}
           playsInline={playsInline}
-          className={`w-full h-full object-cover ${isLoaded ? 'opacity-100' : 'opacity-0'} ${className}`}
+          className={`w-full h-full object-cover transition-opacity duration-300 ${
+            isLoaded ? 'opacity-100' : 'opacity-0'
+          } ${className}`}
           onLoadStart={handleLoadStart}
           onCanPlay={handleCanPlay}
           onError={handleError}
@@ -140,7 +142,7 @@ const VideoOptimizer: React.FC<VideoOptimizerProps> = ({
       {isLoaded && !isLoading && !hasError && (
         <button
           onClick={toggleMute}
-          className="absolute bottom-4 right-4 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 z-30"
+          className="absolute bottom-4 right-4 bg-black/50 hover:bg-black/70 text-white rounded-full p-2 transition-colors duration-200 z-30"
         >
           {isMuted ? (
             <VolumeX className="w-4 h-4" />

@@ -54,7 +54,7 @@ const MobileServicesSection = () => {
             return (
               <div 
                 key={service.id}
-                className="bg-white rounded-2xl shadow-lg overflow-hidden"
+                className="bg-white rounded-2xl shadow-lg overflow-hidden transition-all duration-300 hover:shadow-xl"
               >
                 {/* Service Header - Always Visible */}
                 <div 

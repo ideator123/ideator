@@ -10,7 +10,11 @@
     "start": "next start",
     "compress-videos": "node scripts/compress-videos.js",
     "optimize": "npm run compress-videos && npm run build",
-    "analyze": "ANALYZE=true npm run build"
+    "analyze": "ANALYZE=true npm run build",
+    "optimize-bundle": "node scripts/optimize-bundle.js",
+    "cleanup-deps": "node scripts/cleanup-dependencies.js",
+    "build:prod": "NODE_ENV=production npm run build",
+    "lighthouse": "lighthouse http://localhost:3000 --output=html --output-path=./lighthouse-report.html"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
