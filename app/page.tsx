@@ -462,22 +462,22 @@ export default function IdeatorEventsWebsite() {
               Don't just take our word for it — hear from the clients who've experienced our exceptional service.
             </p>
           </div>
-          <div className="relative overflow-hidden py-4 md:py-8">
+          <div className="relative overflow-hidden py-4 md:py-8 group">
             {/* Fade overlays for left/right edges */}
             {/* Cross-fade overlays for left/right edges */}
-            <div className="pointer-events-none absolute top-0 left-0 h-full w-16 z-20 bg-gradient-to-r from-[#efede7] via-[#efede7]/80 to-transparent transition-opacity duration-700 ease-in-out opacity-100 group-hover:opacity-0" />
-            <div className="pointer-events-none absolute top-0 right-0 h-full w-16 z-20 bg-gradient-to-l from-[#efede7] via-[#efede7]/80 to-transparent transition-opacity duration-700 ease-in-out opacity-100 group-hover:opacity-0" />
-            <div className="absolute top-2 md:top-4 left-1/2 -translate-x-1/2 bg-white/80 text-[#0a2449] text-xs md:text-sm px-4 md:px-6 py-1.5 md:py-2 rounded-full opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100 backdrop-blur-sm shadow-[0_2px_8px_rgba(10,36,73,0.04)]">
+            <div className="hidden sm:block pointer-events-none absolute top-0 left-0 h-full w-16 z-20 bg-gradient-to-r from-[#efede7] via-[#efede7]/80 to-transparent transition-opacity duration-700 ease-in-out opacity-100 group-hover:opacity-0" />
+            <div className="hidden sm:block pointer-events-none absolute top-0 right-0 h-full w-16 z-20 bg-gradient-to-l from-[#efede7] via-[#efede7]/80 to-transparent transition-opacity duration-700 ease-in-out opacity-100 group-hover:opacity-0" />
+            <div className="hidden sm:block absolute top-2 md:top-4 left-1/2 -translate-x-1/2 bg-white/80 text-[#0a2449] text-xs md:text-sm px-4 md:px-6 py-1.5 md:py-2 rounded-full opacity-0 transition-opacity duration-300 ease-in-out group-hover:opacity-100 backdrop-blur-sm shadow-[0_2px_8px_rgba(10,36,73,0.04)]">
               Hover to pause
             </div>
             <div
-              className="flex items-stretch animate-marquee-scroll group whitespace-normal hover:[animation-play-state:paused]"
+              className="flex items-stretch animate-marquee-scroll whitespace-normal hover:[animation-play-state:paused]"
               style={{ animation: "marquee-scroll 15s linear infinite" }}
             >
               {marqueeTestimonials.map((testimonial, index) => (
                 <div
                   key={index}
-                  className="relative min-w-[280px] sm:min-w-[320px] md:min-w-[360px] lg:min-w-[380px] max-w-xs sm:max-w-sm md:max-w-md bg-white shadow-[0_4px_24px_rgba(10,36,73,0.03)] rounded-[40px] md:rounded-[60px] p-6 sm:p-8 md:p-10 flex flex-col justify-between mx-3 sm:mx-4 md:mx-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_8px_40px_rgba(10,36,73,0.06)]"
+                  className={`${index > 1 ? 'hidden sm:flex' : ''} relative min-w-[280px] sm:min-w-[320px] md:min-w-[360px] lg:min-w-[380px] max-w-xs sm:max-w-sm md:max-w-md bg-white shadow-[0_4px_24px_rgba(10,36,73,0.03)] rounded-[40px] md:rounded-[60px] p-6 sm:p-8 md:p-10 flex flex-col justify-between mx-3 sm:mx-4 md:mx-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_8px_40px_rgba(10,36,73,0.06)]`}
                   onMouseEnter={() => {
                     const parent = document.querySelector(".animate-marquee-scroll") as HTMLElement;
                     if (parent) parent.style.animationPlayState = "paused";
@@ -570,7 +570,7 @@ export default function IdeatorEventsWebsite() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-[#efede7] text-[#0a2449] relative overflow-hidden">
+      {/* <section className="py-20 bg-[#efede7] text-[#0a2449] relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_50%,rgba(10,36,73,0.1),transparent)] pointer-events-none"></div>
         <div className="container mx-auto px-4 max-w-6xl text-center relative z-10">
           <h2 className="text-4xl md:text-6xl font-bold mb-8">
@@ -596,7 +596,7 @@ export default function IdeatorEventsWebsite() {
             </Button>
           </div>
         </div>
-      </section>
+      </section> */}
 
       <Suspense fallback={<div className="h-64 bg-[#efede7]" />}>
         <Footer />
