@@ -220,7 +220,7 @@ export default function IdeatorEventsWebsite() {
 
   // Memoized portfolio items for better performance
   const displayedPortfolioItems = useMemo(() => 
-    portfolioItems.slice(0, 3), [portfolioItems]
+    portfolioItems.slice(0, 4), [portfolioItems]
   );
 
   // Memoized testimonials for marquee
@@ -370,36 +370,47 @@ export default function IdeatorEventsWebsite() {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {displayedPortfolioItems.map((item, index) => (
               <div
                 key={index}
-                className="group cursor-pointer"
+                className="group cursor-pointer transform hover:-translate-y-2 transition-all duration-500"
                 onClick={() => item.videourl && setVideoModalUrl(item.videourl)}
               >
-                <div className="relative overflow-hidden rounded-3xl">
+                <div className="relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-shadow duration-500">
                   <Image
                     src={item.image}
                     alt={item.title}
-                    width={400}
-                    height={300}
-                    className="w-full h-[400px] object-cover group-hover:scale-110 transition-transform duration-700"
+                    width={350}
+                    height={280}
+                    className="w-full h-[400px] object-cover group-hover:scale-105 transition-transform duration-700"
                     loading="lazy"
                     placeholder="blur"
                     blurDataURL="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAIAAoDASIAAhEBAxEB/8QAFQABAQAAAAAAAAAAAAAAAAAAAAv/xAAhEAACAQMDBQAAAAAAAAAAAAABAgMABAUGIWGRkqGx0f/EABUBAQEAAAAAAAAAAAAAAAAAAAMF/8QAGhEAAgIDAAAAAAAAAAAAAAAAAAECEgMRkf/aAAwDAQACEQMRAD8AltJagyeH0AthI5xdrLcNM91BF5pX2HaH9bcfaSXWGaRmknyJckliyjqTzSlT54b6bk+h0R//2Q=="
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a2449]/80 via-[#0a2449]/40 to-transparent">
-                    <div className="absolute bottom-8 left-8 text-[#efede7]">
-                      <Badge className="bg-[#efede7]/20 text-[#efede7] mb-4">
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#0a2449]/90 via-[#0a2449]/30 to-transparent opacity-80 group-hover:opacity-90 transition-opacity duration-300">
+                    <div className="absolute bottom-0 left-0 right-0 p-6 text-[#efede7]">
+                      <Badge className="bg-[#efede7]/25 text-[#efede7] mb-3 text-xs px-3 py-1 backdrop-blur-sm">
                         {item.category}
                       </Badge>
-                      <h3 className="text-2xl font-bold mb-2">{item.title}</h3>
-                      <p className="text-[#efede7]/80 flex items-center">
-                        <MapPin className="w-4 h-4 mr-2" />
-                        {item.location}
+                      <h3 className="text-lg font-bold mb-2 line-clamp-2 group-hover:text-white transition-colors duration-300">
+                        {item.title}
+                      </h3>
+                      <p className="text-[#efede7]/90 flex items-center text-sm">
+                        <MapPin className="w-3 h-3 mr-1 flex-shrink-0" />
+                        <span className="truncate">{item.location}</span>
                       </p>
                     </div>
                   </div>
+                  
+                  {/* Hover overlay with play icon for videos */}
+                  {item.videourl && (
+                    <div className="absolute inset-0 bg-[#0a2449]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                      <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center transform scale-75 group-hover:scale-100 transition-transform duration-300">
+                        <div className="w-0 h-0 border-l-[12px] border-l-white border-t-[8px] border-t-transparent border-b-[8px] border-b-transparent ml-1"></div>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ))}
