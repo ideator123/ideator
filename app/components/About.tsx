@@ -111,7 +111,7 @@ export default function AboutSectionRevamp() {
                 Since 2007, Ideator Events has been a trailblazer in the world of corporate and creative events, delivering excellence in over 25 countries.
               </p>
               <p className="text-sm md:text-lg text-[#0a2449]/70 mb-2">
-                From our roots in Kochi to our vibrant hubs in Dubai, Bangkok, and Jakarta, we orchestrate everything from intimate boardroom sessions to spectacular international summits.
+                From our roots in Kochi to our vibrant hubs in Dubai, Bangkok, and Bali, we orchestrate everything from intimate boardroom sessions to spectacular international summits.
               </p>
               <p className="text-sm md:text-lg text-[#0a2449]/70 mb-2">
                 Our team blends local expertise with global standards, ensuring every event is a seamless, memorable experience—no matter where your vision takes you.
@@ -138,13 +138,13 @@ export default function AboutSectionRevamp() {
             {/* CTA Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 md:gap-4 mt-2">
               <a
-                href="#contact"
+                href="/contact"
                 className="group bg-[#0a2449] text-[#efede7] px-6 md:px-8 py-2.5 md:py-3 rounded-full font-semibold text-center shadow-lg hover:shadow-xl transition-all duration-300 hover:bg-[#0a2449]/90 w-full sm:w-auto"
               >
                 Start Your Project
               </a>
               <a
-                href="#portfolio"
+                href="/portfolio"
                 className="group border-2 border-[#0a2449]/20 text-[#0a2449] px-6 md:px-8 py-2.5 md:py-3 rounded-full font-semibold text-center hover:border-[#0a2449] hover:bg-[#0a2449]/5 transition-all duration-300 w-full sm:w-auto"
               >
                 View Our Work

@@ -4,46 +4,48 @@ import { useState, useEffect, Suspense, useMemo } from "react";
 import dynamic from "next/dynamic";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import {
-  MapPin,
-  Star,
-  ArrowRight,
-} from "lucide-react";
+import { MapPin, Star, ArrowRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { portfolioItems as portfolioItemsStatic } from "@/data/portfolio";
 import { supabase } from "@/lib/supabaseClient";
 
 // Optimized dynamic imports with better loading states
-const Header = dynamic(() => import("./components/Header"), { 
-  ssr: false, 
-  loading: () => <div className="h-16 bg-[#0a2449]/60 backdrop-blur-xl" />
+const Header = dynamic(() => import("./components/Header"), {
+  ssr: false,
+  loading: () => <div className="h-16 bg-[#0a2449]/60 backdrop-blur-xl" />,
 });
 
-const Footer = dynamic(() => import("./components/Footer"), { 
-  ssr: false, 
-  loading: () => <div className="h-64 bg-[#efede7]" />
+const Footer = dynamic(() => import("./components/Footer"), {
+  ssr: false,
+  loading: () => <div className="h-64 bg-[#efede7]" />,
 });
 
-const Preloader = dynamic(() => import("./components/Preloader"), { 
-  ssr: false, 
-  loading: () => null 
+const Preloader = dynamic(() => import("./components/Preloader"), {
+  ssr: false,
+  loading: () => null,
 });
 
-const AboutSection = dynamic(() => import("./components/About"), { 
-  ssr: false, 
-  loading: () => <div className="h-96 bg-[#efede7] animate-pulse" />
+const AboutSection = dynamic(() => import("./components/About"), {
+  ssr: false,
+  loading: () => <div className="h-96 bg-[#efede7] animate-pulse" />,
 });
 
-const ServicesCarousel = dynamic(() => import("./components/ServicesCarousel"), { 
-  ssr: false, 
-  loading: () => <div className="h-96 bg-[#efede7] animate-pulse" />
-});
+const ServicesCarousel = dynamic(
+  () => import("./components/ServicesCarousel"),
+  {
+    ssr: false,
+    loading: () => <div className="h-96 bg-[#efede7] animate-pulse" />,
+  }
+);
 
-const EnhancedMobileServices = dynamic(() => import("./components/EnhancedMobileServices"), { 
-  ssr: false, 
-  loading: () => <div className="h-96 bg-[#efede7] animate-pulse" />
-});
+const EnhancedMobileServices = dynamic(
+  () => import("./components/EnhancedMobileServices"),
+  {
+    ssr: false,
+    loading: () => <div className="h-96 bg-[#efede7] animate-pulse" />,
+  }
+);
 
 // Memoized static data
 const companies = [
@@ -110,7 +112,8 @@ const locations = [
 
 export default function IdeatorEventsWebsite() {
   const [videoModalUrl, setVideoModalUrl] = useState<string | null>(null);
-  const [portfolioItems, setPortfolioItems] = useState<any[]>(portfolioItemsStatic);
+  const [portfolioItems, setPortfolioItems] =
+    useState<any[]>(portfolioItemsStatic);
   const [testimonials, setTestimonials] = useState<any[]>(initialTestimonials);
   const [pageLoading, setPageLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
@@ -122,22 +125,22 @@ export default function IdeatorEventsWebsite() {
     const checkMobile = () => {
       setIsMobile(window.innerWidth < 640);
     };
-    
+
     checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", checkMobile);
+
+    return () => window.removeEventListener("resize", checkMobile);
   }, []);
 
   // Initialize AOS with optimized loading
   useEffect(() => {
     if (typeof window === "undefined") return;
-    
+
     const initAOS = async () => {
       try {
         const [AOS] = await Promise.all([
           import("aos"),
-          import("aos/dist/aos.css")
+          import("aos/dist/aos.css"),
         ]);
         AOS.default.init({
           duration: 800,
@@ -148,14 +151,16 @@ export default function IdeatorEventsWebsite() {
         console.error("Failed to load AOS:", error);
       }
     };
-    
+
     initAOS();
   }, []);
 
   // Optimized video loading check
   useEffect(() => {
-    const videos = Array.from(document.querySelectorAll("video")) as HTMLVideoElement[];
-    
+    const videos = Array.from(
+      document.querySelectorAll("video")
+    ) as HTMLVideoElement[];
+
     if (videos.length === 0) {
       setPageLoading(false);
       return;
@@ -200,14 +205,20 @@ export default function IdeatorEventsWebsite() {
           supabase
             .from("testimonials")
             .select("id, name, company, text, rating, image")
-            .order("id", { ascending: false })
+            .order("id", { ascending: false }),
         ]);
 
-        if (portfolioResult.status === "fulfilled" && portfolioResult.value.data) {
+        if (
+          portfolioResult.status === "fulfilled" &&
+          portfolioResult.value.data
+        ) {
           setPortfolioItems(portfolioResult.value.data);
         }
 
-        if (testimonialsResult.status === "fulfilled" && testimonialsResult.value.data) {
+        if (
+          testimonialsResult.status === "fulfilled" &&
+          testimonialsResult.value.data
+        ) {
           setTestimonials(testimonialsResult.value.data);
         }
       } catch (error) {
@@ -219,27 +230,29 @@ export default function IdeatorEventsWebsite() {
   }, []);
 
   // Memoized portfolio items for better performance
-  const displayedPortfolioItems = useMemo(() => 
-    portfolioItems.slice(0, 4), [portfolioItems]
+  const displayedPortfolioItems = useMemo(
+    () => portfolioItems.slice(0, 4),
+    [portfolioItems]
   );
 
   // Memoized testimonials for marquee
-  const marqueeTestimonials = useMemo(() => 
-    testimonials.concat(testimonials), [testimonials]
+  const marqueeTestimonials = useMemo(
+    () => testimonials.concat(testimonials),
+    [testimonials]
   );
 
   return (
     <div className="min-h-screen bg-[#efede7]">
-      <Suspense fallback={null}>
-        {pageLoading && <Preloader />}
-      </Suspense>
-      
-      <Suspense fallback={<div className="h-16 bg-[#0a2449]/60 backdrop-blur-xl" />}>
+      <Suspense fallback={null}>{pageLoading && <Preloader />}</Suspense>
+
+      <Suspense
+        fallback={<div className="h-16 bg-[#0a2449]/60 backdrop-blur-xl" />}
+      >
         <Header />
       </Suspense>
 
       {/* Hero Section */}
-      <section className="relative h-[90vh] flex items-center justify-center overflow-hidden pt-16 bg-[#0a2449] mt-10">
+      <section className="relative h-[90vh] flex items-center justify-center overflow-hidden pt-16 mt-20">
         <div className="absolute inset-0 w-full h-full z-0">
           <video
             autoPlay
@@ -248,36 +261,25 @@ export default function IdeatorEventsWebsite() {
             playsInline
             width="1920"
             height="1080"
-            poster="/banner_compressed.mp4"
+            poster="/banners.mp4"
             className="w-full h-full object-cover"
-            style={{ objectPosition: "center", filter: "blur(1px) brightness(1.15) saturate(0.7)" }}
             preload="metadata"
           >
-            <source src="/banner_compressed.mp4" type="video/mp4" />
-            <source src="/banner.webm" type="video/webm" />
+            <source src="/banners.mp4" type="video/mp4" />
+            <source src="/banners.webm" type="video/webm" />
           </video>
-          <div
-            className="absolute inset-0 pointer-events-none"
-            style={{
-              backdropFilter: "blur(8px)",
-              WebkitBackdropFilter: "blur(8px)",
-            }}
-          />
+          <div className="absolute inset-0 pointer-events-none" />
         </div>
-        
+
         <div className="absolute inset-0 z-10 bg-gradient-to-b from-[#0a2449]/60 via-[#0a2449]/30 to-transparent pointer-events-none"></div>
-        
-        <div className="relative z-20 flex flex-col items-start md:items-center justify-center w-full h-full px-4">
+
+        {/* Hero Content at Bottom */}
+        <div className="absolute bottom-0 left-0 right-0 z-20 flex flex-col items-center justify-end w-full px-4 pb-12">
           <h1
             className={`
-              text-3xl sm:text-4xl md:text-6xl font-extrabold text-[#efede7] 
-              text-left md:text-center mb-6 drop-shadow-lg animate-fade-in-up
-              ${isClient && isMobile ? "tracking-tight font-sans" : ""}
+              text-3xl sm:text-4xl md:text-6xl font-extrabold text-[#efede7]
+              text-center mb-4 drop-shadow-lg animate-fade-in-up
             `}
-            style={{
-              fontFamily: isClient && isMobile ? "'Inter', 'Arial', sans-serif" : undefined,
-              letterSpacing: isClient && isMobile ? "-0.01em" : undefined,
-            }}
           >
             Elevate Your{" "}
             <span className="text-[#FFFFFFFF] px-2 rounded">Events</span>
@@ -287,32 +289,28 @@ export default function IdeatorEventsWebsite() {
           </h1>
           <p
             className={`
-              text-base sm:text-lg md:text-2xl text-[#efede7]/80 
-              text-left md:text-center mb-8 max-w-2xl animate-fade-in-up delay-150
-              ${isClient && isMobile ? "font-sans" : ""}
+              text-base sm:text-lg md:text-2xl text-[#efede7]/80
+              text-center mb-8 max-w-2xl animate-fade-in-up delay-150
             `}
-            style={{
-              fontFamily: isClient && isMobile ? "'Inter', 'Arial', sans-serif" : undefined,
-            }}
           >
-            Unforgettable experiences, crafted with passion and precision—across India, UAE, Thailand, and Indonesia.
+            Unforgettable experiences, crafted with passion and precision—across
+            India, UAE, Thailand, and Indonesia.
           </p>
           <a href="#about">
-
-          <Button
-            size={isClient && isMobile ? "sm" : "lg"}
-            className={`
-              bg-[#0a2449] text-[#efede7] hover:bg-[#0a2449]/90
-              ${isClient && isMobile ? "px-5 py-3 text-base" : "px-8 py-5 text-lg"}
-              rounded-full font-semibold shadow-lg animate-fade-in-up delay-300
-            `}
-          >
-            Know More
-            <ArrowRight className="ml-2 w-5 h-5" />
-          </Button>
+            <Button
+              size="lg"
+              className={`
+                bg-[#0a2449] text-[#efede7] hover:bg-[#0a2449]/90
+                px-8 py-5 text-lg
+                rounded-full font-semibold shadow-lg animate-fade-in-up delay-300
+              `}
+            >
+              Know More
+              <ArrowRight className="ml-2 w-5 h-5" />
+            </Button>
           </a>
         </div>
-        
+
         <style jsx>{`
           @keyframes fade-in-up {
             0% {
@@ -337,7 +335,9 @@ export default function IdeatorEventsWebsite() {
       </section>
 
       <div id="about">
-        <Suspense fallback={<div className="h-96 bg-[#efede7] animate-pulse" />}>
+        <Suspense
+          fallback={<div className="h-96 bg-[#efede7] animate-pulse" />}
+        >
           <AboutSection />
         </Suspense>
       </div>
@@ -345,12 +345,16 @@ export default function IdeatorEventsWebsite() {
       {/* Services Section */}
       <div id="services">
         <div className="hidden lg:block">
-          <Suspense fallback={<div className="h-96 bg-[#efede7] animate-pulse" />}>
+          <Suspense
+            fallback={<div className="h-96 bg-[#efede7] animate-pulse" />}
+          >
             <ServicesCarousel />
           </Suspense>
         </div>
 
-        <Suspense fallback={<div className="h-96 bg-[#efede7] animate-pulse" />}>
+        <Suspense
+          fallback={<div className="h-96 bg-[#efede7] animate-pulse" />}
+        >
           <EnhancedMobileServices />
         </Suspense>
       </div>
@@ -366,7 +370,8 @@ export default function IdeatorEventsWebsite() {
               Our Work
             </h2>
             <p className="text-xl text-[#0a2449]/70 max-w-3xl mx-auto">
-              Discover the extraordinary events we've brought to life across the globe.
+              Discover the extraordinary events we've brought to life across the
+              globe.
             </p>
           </div>
 
@@ -402,7 +407,7 @@ export default function IdeatorEventsWebsite() {
                       </p>
                     </div>
                   </div>
-                  
+
                   {/* Hover overlay with play icon for videos */}
                   {item.videourl && (
                     <div className="absolute inset-0 bg-[#0a2449]/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
@@ -415,7 +420,7 @@ export default function IdeatorEventsWebsite() {
               </div>
             ))}
           </div>
-          
+
           <div className="text-center mt-16">
             <Link href="/portfolio">
               <Button
@@ -431,23 +436,29 @@ export default function IdeatorEventsWebsite() {
           {/* Video Modal */}
           {videoModalUrl && (
             <div
-              className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4"
+              className="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4"
               onClick={() => setVideoModalUrl(null)}
             >
               <div
-                className="relative w-full max-w-3xl aspect-video"
+                className="relative w-full max-w-4xl aspect-video"
                 onClick={(e) => e.stopPropagation()}
               >
-                <iframe
-                  src={`${videoModalUrl}?autoplay=1`}
-                  title="Portfolio video"
-                  allow="autoplay; encrypted-media"
-                  allowFullScreen
-                  className="w-full h-full rounded-xl shadow-2xl"
-                  loading="lazy"
-                />
+                {/* Outer frame */}
+                <div className="w-full h-full rounded-2xl shadow-2xl border-4 border-[#efede7] bg-black flex items-center justify-center relative">
+                  {/* Inner frame with video */}
+                  <div className="w-[90%] h-[90%] rounded-xl overflow-hidden border-2 border-[#0a2449] bg-black flex items-center justify-center relative">
+                    <iframe
+                      src={`${videoModalUrl}?autoplay=1`}
+                      title="Portfolio video"
+                      allow="autoplay; encrypted-media"
+                      allowFullScreen
+                      className="w-full h-full rounded-xl"
+                      loading="lazy"
+                    />
+                  </div>
+                </div>
                 <button
-                  className="absolute -top-10 right-0 text-white text-3xl font-bold hover:text-gray-300 focus:outline-none"
+                  className="absolute -top-12 right-0 text-white text-4xl font-bold hover:text-gray-300 focus:outline-none bg-black/50 rounded-full w-10 h-10 flex items-center justify-center"
                   onClick={() => setVideoModalUrl(null)}
                   aria-label="Close video modal"
                 >
@@ -470,7 +481,8 @@ export default function IdeatorEventsWebsite() {
               What Our Clients Say
             </h2>
             <p className="text-xl text-[#0a2449]/70 max-w-3xl mx-auto">
-              Don't just take our word for it — hear from the clients who've experienced our exceptional service.
+              Don't just take our word for it — hear from the clients who've
+              experienced our exceptional service.
             </p>
           </div>
           <div className="relative overflow-hidden py-4 md:py-8 group">
@@ -488,21 +500,31 @@ export default function IdeatorEventsWebsite() {
               {marqueeTestimonials.map((testimonial, index) => (
                 <div
                   key={index}
-                  className={`${index > 1 ? 'hidden sm:flex' : ''} relative min-w-[280px] sm:min-w-[320px] md:min-w-[360px] lg:min-w-[380px] max-w-xs sm:max-w-sm md:max-w-md bg-white shadow-[0_4px_24px_rgba(10,36,73,0.03)] rounded-[40px] md:rounded-[60px] p-6 sm:p-8 md:p-10 flex flex-col justify-between mx-3 sm:mx-4 md:mx-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_8px_40px_rgba(10,36,73,0.06)]`}
+                  className={`${
+                    index > 1 ? "hidden sm:flex" : ""
+                  } relative min-w-[280px] sm:min-w-[320px] md:min-w-[360px] lg:min-w-[380px] max-w-xs sm:max-w-sm md:max-w-md bg-white shadow-[0_4px_24px_rgba(10,36,73,0.03)] rounded-[40px] md:rounded-[60px] p-6 sm:p-8 md:p-10 flex flex-col justify-between mx-3 sm:mx-4 md:mx-6 transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_8px_40px_rgba(10,36,73,0.06)]`}
                   onMouseEnter={() => {
-                    const parent = document.querySelector(".animate-marquee-scroll") as HTMLElement;
+                    const parent = document.querySelector(
+                      ".animate-marquee-scroll"
+                    ) as HTMLElement;
                     if (parent) parent.style.animationPlayState = "paused";
                   }}
                   onMouseLeave={() => {
-                    const parent = document.querySelector(".animate-marquee-scroll") as HTMLElement;
+                    const parent = document.querySelector(
+                      ".animate-marquee-scroll"
+                    ) as HTMLElement;
                     if (parent) parent.style.animationPlayState = "running";
                   }}
                   onTouchStart={() => {
-                    const parent = document.querySelector(".animate-marquee-scroll") as HTMLElement;
+                    const parent = document.querySelector(
+                      ".animate-marquee-scroll"
+                    ) as HTMLElement;
                     if (parent) parent.style.animationPlayState = "paused";
                   }}
                   onTouchEnd={() => {
-                    const parent = document.querySelector(".animate-marquee-scroll") as HTMLElement;
+                    const parent = document.querySelector(
+                      ".animate-marquee-scroll"
+                    ) as HTMLElement;
                     if (parent) parent.style.animationPlayState = "running";
                   }}
                 >
@@ -529,7 +551,9 @@ export default function IdeatorEventsWebsite() {
                           loading="lazy"
                         />
                       ) : (
-                        <div className="w-5 h-5 sm:w-6 sm:h-6 text-[#0a2449]/40">👤</div>
+                        <div className="w-5 h-5 sm:w-6 sm:h-6 text-[#0a2449]/40">
+                          👤
+                        </div>
                       )}
                     </div>
                     <div>
