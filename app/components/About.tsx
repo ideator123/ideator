@@ -50,10 +50,17 @@ export default function AboutSectionRevamp() {
             transition={{ duration: 0.8 }}
           >
             <div className="relative w-full max-w-md mx-auto">
-              <div className="rounded-[2.5rem] shadow-2xl bg-gradient-to-br from-white/60 to-[#e8e5de]/60 border border-[#0a2449]/10 p-6 pb-0">
-                <div className="flex items-center justify-center h-[400px]">
-                  <Globe className="w-full h-full" />
-                </div>
+              <div className="rounded-[2.5rem] shadow-2xl bg-gradient-to-br from-white/60 to-[#e8e5de]/60 border border-[#0a2449]/10 p-0 overflow-hidden">
+                <video
+                  src="/about.mp4"
+                  autoPlay
+                  loop
+                  muted
+                  playsInline
+                  className="w-full h-[400px] object-cover"
+                  poster="/about-video-poster.jpg"
+                  aria-label="About Ideator Events video"
+                />
               </div>
               {/* Floating badge */}
               <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-white/90 border border-[#0a2449]/10 px-4 py-1.5 md:px-5 md:py-2 rounded-full shadow-lg flex items-center gap-2 text-[#0a2449] text-xs md:text-sm font-semibold backdrop-blur-sm whitespace-nowrap">
@@ -70,7 +77,7 @@ export default function AboutSectionRevamp() {
                     className="flex items-center gap-1 bg-[#0a2449]/10 text-[#0a2449] px-2.5 py-1 rounded-full text-xs md:text-sm font-medium"
                   >
                     <ReactCountryFlag countryCode={loc.code} svg />
-                    {loc.city}
+                    {loc.country}
                   </span>
                 ))}
               </div>
