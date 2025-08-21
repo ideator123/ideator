@@ -34,7 +34,7 @@ export default function ContactSidebar() {
       country: 'India',
       address: 'HIG 33, Panampalli Nager, Kochi, Kerala, India- 682036',
       phone: '+91 8113095333, +91 7498473667',
-      email: 'kochi@ideatorevents.com',
+      email: ' mail@ideator.events',
       flag: '🇮🇳',
       timezone: 'IST (UTC+5:30)',
       featured: true
@@ -44,7 +44,7 @@ export default function ContactSidebar() {
       country: 'UAE',
       address: '122, Warba Centre, Al Murqabat, Deira, Dubai UAE',
       phone: '+971 544631931, +971 524621635',
-      email: 'dubai@ideatorevents.com',
+      email: ' mail@ideator.events',
       flag: '🇦🇪',
       timezone: 'GST (UTC+4)'
     },
@@ -53,7 +53,7 @@ export default function ContactSidebar() {
       country: 'Thailand',
       address: 'Soi Ladprao 94, Ladprao Road,Phlapphla, Wangthonglang, Bangkok-10310.',
       phone: '',
-      email: 'bangkok@ideatorevents.com',
+      email: ' mail@ideator.events',
       flag: '🇹🇭',
       timezone: 'ICT (UTC+7)'
     },
@@ -62,7 +62,7 @@ export default function ContactSidebar() {
       country: 'Indonesia',
       address: 'Jl. Gunung Tangkuban-Perahu, Bali 80117 -Indonesia',
       phone: '',
-      email: 'bali@ideatorevents.com',
+      email: ' mail@ideator.events',
       flag: '🇮🇩',
       timezone: 'WITA (UTC+8)'
     }
